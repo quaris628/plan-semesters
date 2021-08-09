@@ -3,20 +3,45 @@ USE semesters_planner;
 
 
 -- -----------------------------------------------------
--- Table prereqs
+-- Table reqs
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS prereqs (
+CREATE TABLE IF NOT EXISTS reqs (
   id INT NOT NULL,
-  course VARCHAR(45) NULL COMMENT 'If course is not null, this reqirement is exactly one course.\nIf \"is_or\" is true, this requirement is (req1 or req2), else this requirement is (req1 and req2).\n',
-  coreq TINYINT NULL,
-  req1 INT NULL,
-  is_or TINYINT NULL,
-  req2 INT NULL,
-  created TIMESTAMP DEFAULT current_timestamp,
-  updated TIMESTAMP DEFAULT current_timestamp ON UPDATE current_timestamp,
-  deleted TINYINT DEFAULT false,
-  PRIMARY KEY (id),
-  CONSTRAINT atleastoneNN CHECK (course is not NULL or (req1 is not NULL and req2 is not NULL))
+  PRIMARY KEY(id)
+);
+
+
+-- -----------------------------------------------------
+-- Table reqs_or
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS reqs_or (
+  reqs_id INT NOT NULL,
+  req1 INT NOT NULL,
+  req2 INT NOT NULL,
+  PRIMARY KEY(reqs_id),
+  CONSTRAINT reqs_id_fk FOREIGN KEY (reqs_id) REFERENCES reqs (id)
+	ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT req1_fk FOREIGN KEY (req1) REFERENCES reqs (id)
+    ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT req2_fk FOREIGN KEY (req2) REFERENCES reqs (id)
+    ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+
+-- -----------------------------------------------------
+-- Table reqs_and
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS reqs_and (
+  reqs_id INT NOT NULL,
+  req1 INT NOT NULL,
+  req2 INT NOT NULL,
+  PRIMARY KEY(reqs_id),
+  CONSTRAINT and_reqs_id_fk FOREIGN KEY (reqs_id) REFERENCES reqs (id)
+	ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT and_req1_fk FOREIGN KEY (req1) REFERENCES reqs (id)
+    ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT and_req2_fk FOREIGN KEY (req2) REFERENCES reqs (id)
+    ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 
@@ -25,21 +50,20 @@ CREATE TABLE IF NOT EXISTS prereqs (
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS courses (
   id VARCHAR(15) NOT NULL,
+  req_id INT NOT NULL,
   full_name VARCHAR(45) NOT NULL,
   credits INT NOT NULL,
-  description VARCHAR(500) NULL,
-  notes VARCHAR(200) NULL,
   prereqs_id INT NULL,
+  descr VARCHAR(500) NULL,
+  notes VARCHAR(200) NULL,
   created TIMESTAMP DEFAULT current_timestamp,
   updated TIMESTAMP DEFAULT current_timestamp ON UPDATE current_timestamp,
   deleted TINYINT DEFAULT false,
   PRIMARY KEY (id),
-  INDEX fk_courses_reqs_idx (prereqs_id ASC) VISIBLE,
-  CONSTRAINT fk_courses_reqs
-    FOREIGN KEY (prereqs_id)
-    REFERENCES prereqs (id)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE
+  CONSTRAINT fk_courses_reqs FOREIGN KEY (req_id) REFERENCES reqs (id)
+	ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT fk_courses_reqs1 FOREIGN KEY (prereqs_id) REFERENCES reqs (id)
+    ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 
@@ -58,29 +82,21 @@ CREATE TABLE IF NOT EXISTS degrees (
 
 
 -- -----------------------------------------------------
--- Table degrees_have_courses
+-- Table degrees_have_reqs
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS degrees_have_courses (
+CREATE TABLE IF NOT EXISTS degrees_have_reqs (
   degrees_id INT NOT NULL,
   courses_id VARCHAR(15) NOT NULL,
   created TIMESTAMP DEFAULT current_timestamp,
   updated TIMESTAMP DEFAULT current_timestamp ON UPDATE current_timestamp,
   deleted TINYINT DEFAULT false,
   PRIMARY KEY (degrees_id, courses_id),
-  INDEX fk_degrees_has_courses_courses1_idx (courses_id ASC) VISIBLE,
-  INDEX fk_degrees_has_courses_degrees1_idx (degrees_id ASC) VISIBLE,
-  CONSTRAINT fk_degrees_has_courses_degrees1
-    FOREIGN KEY (degrees_id)
-    REFERENCES degrees (id)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE,
-  CONSTRAINT fk_degrees_has_courses_courses1
-    FOREIGN KEY (courses_id)
-    REFERENCES courses (id)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE
+  INDEX degrees_index (degrees_id),
+  CONSTRAINT fk_degrees_has_reqs_degrees1 FOREIGN KEY (degrees_id) REFERENCES degrees (id)
+    ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT fk_degrees_has_reqs_courses1 FOREIGN KEY (courses_id) REFERENCES courses (id)
+    ON DELETE CASCADE ON UPDATE CASCADE
 );
-
 
 CREATE USER IF NOT EXISTS 'manage_degrees'@'localhost' IDENTIFIED BY 'f8c79012c3812d3182c0bc9a046b8e9';
 GRANT INSERT, SELECT, UPDATE ON semesters_planner.* TO 'manage_degrees'@'localhost';
