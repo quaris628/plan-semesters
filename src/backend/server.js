@@ -15,7 +15,7 @@ var serverFileHome = '../frontend/';
 var serverMain = 'main.html';
 var fnfHtml = 'fnf.html';
 
-app.use(express.static(path.join(__dirname, '/')));
+// app.use(express.static(path.join(__dirname, '/')));
 
 
 http.createServer(function (req, res) {
@@ -29,7 +29,7 @@ http.createServer(function (req, res) {
 	// if 404
 	else if (!serverFiles.includes(fileName)) {
 		console.info("Returning 404 for " + fileName);
-		fs.readFile(fnfHtml, function(err, data) {
+		fs.readFile(serverFileHome + fnfHtml, function(err, data) {
 			res.writeHead(404, {'Content-Type': 'text/html'});
 			if (data != undefined) { res.write(data); }
 			return res.end();
