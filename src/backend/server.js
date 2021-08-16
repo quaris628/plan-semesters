@@ -29,7 +29,7 @@ function serveFile(filepath, res) {
 	// if no file specified, return main file
 	if (filepath == '') {
 		serveHTML(serverMain, res);
-		log('Serving ' + filepath);
+		log('Serving ' + serverMain);
 	} else {
 		let filetype = filepath.substring(filepath.lastIndexOf('.'));
 		switch (filetype) {
