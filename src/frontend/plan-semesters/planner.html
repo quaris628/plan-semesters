@@ -9,6 +9,7 @@
 	<meta name="description" content="This planner aims to provide students with tools to guide them through planning which courses they will take during which of their semesters (or trimesters).">
 	
 	<link rel="stylesheet" href="planner.css">
+    
 	<script src="model/course.js" defer></script>
 	<script src="controller/courseInputMouse.js" defer></script>
 	<script src="controller/courseInputKeyboard.js" defer></script>
@@ -33,36 +34,31 @@
         <div id="horzFlexBox">
             <!-- edit the list of requirements to be met by the plan, (todo) can manually collapse -->
             <div id="reqManager">
-                
                 <button>Refresh Requirements</button>
-                <br>
-                <input type="checkbox" id="seCheck" name="se" value="y"><label>SE B.S.</label>
-                <br>
-                <input type="checkbox" id="csCheck" name="cs" value="y"><label>CS B.S.</label>
-
+                <ul>
+					<li><input type="checkbox" id="seCheck"><label>SE Major</label></li>
+					<li><input type="checkbox" id="csCheck"><label>CS Major</label></li>
+					<li><input type="checkbox" id="csCheck"><label>Math Minor</label></li>
+				</ul>
             </div>
             <!-- requirements / courses list, always shown -->
             <div id="reqListArea">
-                <table id="reqListTable">
-                    <thead>
-                        <tr><th>Requirements</th></tr>
-                    </thead>
-                    <tbody>
-                        <tr><td>Course 1</td></tr>
-                        <tr><td>Course 2</td></tr>
-                        <tr><td>Course 3</td></tr>
-                    </tbody>
-                </table>
+                <ul id="reqList">
+                    <h4>Requirements</h4>
+					<li>Course 1</li>
+					<li>Course 2</li>
+					<li>Course 3</li>
+                </ul>
             </div>
             <!-- table in which to drag and drop things, scrollable -->
             <div id="planArea">
                 <table id="plannerTable">
                     <thead>
                         <tr>
-                            <th>Satisfied</th>
-                            <th>Semester 1</th>
-                            <th>Semester 2</th>
-                            <th>Semester 3</th>
+                            <th><h4>Satisfied</h4></th>
+                            <th><h4>Semester 1</h4></th>
+                            <th><h4>Semester 2</h4></th>
+                            <th><h4>Semester 3</h4></th>
                         </tr>
                     </thead>
                     <tbody>
