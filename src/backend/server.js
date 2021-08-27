@@ -3,18 +3,22 @@ var url = require('url');
 var fs = require('fs');
 
 
+var fileHome = '../frontend/';
 var serverFiles = [
 	'', // serve serverMain
 	'plan-semesters/planner.html',
 	'plan-semesters/planner.css',
-	'plan-semesters/dragNDrop.js',
-	'plan-semesters/courses.js',
-	'plan-semesters/keyboardNav.js',
+	'plan-semesters/model/course.js',
+	'plan-semesters/controller/courseInputMouse.js',
+	'plan-semesters/controller/courseInputKeyboard.js',
+	'plan-semesters/controller/courseDetails.js',
 	'manage-degrees/manager.html'
   ];
-var fileHome = '../frontend/';
-var serverMain = 'main.html';
+var serverMain = 'index.html';
 var fnfHtml = 'fnf.html';
+
+var myCSSEncoding = "UTF-8";
+var myPngEncoding = "UTF-8";
 
 // app.use(express.static(path.join(__dirname, '/')));
 
@@ -68,7 +72,8 @@ function serveHTML(filepath, res) {
 
 function serveCSS(filepath, res) {
     res.writeHead(200, {"Content-Type": "text/css"});
-    fs.createReadStream(fileHome + filepath, "UTF-8").pipe(res);
+    fs.createReadStream(fileHome + filepath, myCSSEncoding).pipe(res);
+	// todo: catch errors reading file
 }
 
 function serveJS(filepath, res) {
@@ -88,7 +93,9 @@ function serveJS(filepath, res) {
 
 function servePNG(filepath, res) {
 	res.writeHead(200, {"Content-Type": "image/png"});
-    fs.createReadStream(fileHome + filepath, "UTF-8").pipe(res);
+	// todo: maybe fix png encoding type?
+    fs.createReadStream(fileHome + filepath, myPngEncoding).pipe(res);
+	// todo: catch errors reading file
 }
 
 function serve404(res) {
@@ -113,4 +120,4 @@ http.createServer(function (req, res) {
 	
 }).listen(8080);
 
-console.log("Server Starting");
+log('Server Starting');

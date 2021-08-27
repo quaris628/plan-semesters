@@ -13,3 +13,11 @@ function drop(ev) {
         ev.target.appendChild(document.getElementById(draggedID));
     }
 }
+
+function courseClick(id) {
+    setCourseDetailsById(id);
+    document.getElementById(id).focus();
+}
+
+
+// todo: when empty box clicked, make the course in that row move there
