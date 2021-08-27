@@ -51,7 +51,7 @@ function serveFile(filepath, res) {
 				break;
 			default:
 				serve404(res);
-				log('Serving ' + filepath);
+				log('404 for ' + filepath);
 		}
 	}
 	
@@ -120,4 +120,4 @@ http.createServer(function (req, res) {
 	
 }).listen(8080);
 
-log('Server Starting');
+log(' ----- Starting -----');
