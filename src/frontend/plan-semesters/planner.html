@@ -27,75 +27,99 @@
 	
 </head>
 <body>
-    <div id="vertFlexBox">
-        <div id="topbar">
-            <button>top bar placeholder</button>
-        </div>
-        <div id="horzFlexBox">
-            <!-- edit the list of requirements to be met by the plan, (todo) can manually collapse -->
-            <div id="reqManager">
-                <button>Refresh Requirements</button>
-                <ul>
-					<li><input type="checkbox" id="seCheck"><label>SE Major</label></li>
-					<li><input type="checkbox" id="csCheck"><label>CS Major</label></li>
-					<li><input type="checkbox" id="csCheck"><label>Math Minor</label></li>
-				</ul>
-            </div>
-            <!-- requirements / courses list, always shown -->
-            <div id="reqListArea">
-                <ul id="reqList">
-                    <h4>Requirements</h4>
-					<li>Course 1</li>
-					<li>Course 2</li>
-					<li>Course 3</li>
-                </ul>
-            </div>
-            <!-- table in which to drag and drop things, scrollable -->
-            <div id="planArea">
-                <table id="plannerTable">
-                    <thead>
-                        <tr>
-                            <th><h4>Satisfied</h4></th>
-                            <th><h4>Semester 1</h4></th>
-                            <th><h4>Semester 2</h4></th>
-                            <th><h4>Semester 3</h4></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><div class="dragCatch" ondragover="event.preventDefault();" ondrop="drop(event)"></div></td>
-                            <td><div class="dragCatch" ondragover="event.preventDefault();" ondrop="drop(event)">
-                                <p id="c1000" class="course" tabindex="0" draggable=true ondragstart="drag(event)" onclick="courseClick(this.id)">Course 1</p></td></div></td>
-                            <td><div class="dragCatch" ondragover="event.preventDefault();" ondrop="drop(event)"></div></td>
-                            <td><div class="dragCatch" ondragover="event.preventDefault();" ondrop="drop(event)"></div></td>
-                        </tr>
-                        <tr>
-                            <td><div class="dragCatch" ondragover="event.preventDefault();" ondrop="drop(event)"></div></td>
-                            <td><div class="dragCatch" ondragover="event.preventDefault();" ondrop="drop(event)"></div></td>
-                            <td><div class="dragCatch" ondragover="event.preventDefault();" ondrop="drop(event)">
-                                <p id="c2000" class="course" tabindex="0" draggable=true ondragstart="drag(event)" onclick="courseClick(this.id)">Course 2</p></td></div></td>
-                            <td><div class="dragCatch" ondragover="event.preventDefault();" ondrop="drop(event)"></div></td>
-                        </tr>
-                        <tr class="plannerCourseRow">
-                            <td><div class="dragCatch" ondragover="event.preventDefault();" ondrop="drop(event)"></div></td>
-                            <td><div class="dragCatch" ondragover="event.preventDefault();" ondrop="drop(event)"></div></td>
-                            <td><div class="dragCatch" ondragover="event.preventDefault();" ondrop="drop(event)"></div></td>
-                            <td><div class="dragCatch" ondragover="event.preventDefault();" ondrop="drop(event)">
-                                <p id="c3000" class="course" tabindex="0" draggable=true ondragstart="drag(event)" onclick="courseClick(this.id)">Course 3</p></td></div></td>
-                            
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            <!-- shows details of the currently selected course -->
-            <div id="courseDetails">
-                <a id="closeCourseDetails" href="javascript:void(0)" onclick="clearCourseDetails()">X</a>
-                <h2 id="name"></h2>
-                <p id="credits"></p>
-                <p id="desc"></p>
-            </div>
-        </div>
-        
-    </div>
+	<nav>
+		<ul>
+			<li><a href="../index.html">Back Home</a></li>
+			<li><a href="../manage-degrees/manager.html">Change Degree Requirements </a></li>
+		</ul>
+		<!-- Readme before making a download-my-plan button? https://developer.mozilla.org/en-US/docs/Learn/HTML/Introduction_to_HTML/Creating_hyperlinks#use_the_download_attribute_when_linking_to_a_download -->
+	</nav>
+	<div>
+		<h2>My Plan</h2>
+		<ul class="horzRibbon">
+			
+			<!-- Saving/Loading todo -->
+			<li><button>Save Plan</button></li>
+			<li><button>Load Plan</button></li>
+			<li><input type="checkbox" id="trimester"><label>Trimester</label></li>
+			<li><button>Show Advanced Options</button></li>
+			<li><span title="Allows courses to be planned in invalid semesters">
+				<input type="checkbox" id="manualOverride"><label>Manual Override</label>
+			</li></span>
+		</ul>
+	</div>
+	<main>
+		<!-- edit the list of requirements to be met by the plan, (todo can manually collapse) -->
+		<section>
+			<!-- hide me as a side panel? -->
+			<h3>Select Degree(s)</h3>
+			<ul>
+				<li><input type="checkbox" id="seCheck"><label>SE Major</label></li>
+				<li><input type="checkbox" id="csCheck"><label>CS Major</label></li>
+				<li><input type="checkbox" id="mathCheck"><label>Math Minor</label></li>
+			</ul>
+		</section>
+	
+		<!-- requirements / courses list, always shown -->
+		<section>
+			<h3>Requirements</h3>
+			<ul id="reqList">
+				<li>Course 1</li>
+				<li>Course 2</li>
+				<li>Course 3</li>
+			</ul>
+		</section>
+		<!-- table in which to drag and drop things, scrollable -->
+		<section id="planArea">
+			<table id="plannerTable">
+				<thead>
+					<tr>
+						<th><h4>Satisfied</h4></th>
+						<th><h4>Semester 1</h4></th>
+						<th><h4>Semester 2</h4></th>
+						<th><h4>Semester 3</h4></th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td><div class="dragCatch" ondragover="event.preventDefault();" ondrop="drop(event)"></div></td>
+						<td><div class="dragCatch" ondragover="event.preventDefault();" ondrop="drop(event)">
+							<p id="c1000" class="course" tabindex="0" draggable=true ondragstart="drag(event)" onclick="courseClick(this.id)">Course 1</p></td></div></td>
+						<td><div class="dragCatch" ondragover="event.preventDefault();" ondrop="drop(event)"></div></td>
+						<td><div class="dragCatch" ondragover="event.preventDefault();" ondrop="drop(event)"></div></td>
+					</tr>
+					<tr>
+						<td><div class="dragCatch" ondragover="event.preventDefault();" ondrop="drop(event)"></div></td>
+						<td><div class="dragCatch" ondragover="event.preventDefault();" ondrop="drop(event)"></div></td>
+						<td><div class="dragCatch" ondragover="event.preventDefault();" ondrop="drop(event)">
+							<p id="c2000" class="course" tabindex="0" draggable=true ondragstart="drag(event)" onclick="courseClick(this.id)">Course 2</p></td></div></td>
+						<td><div class="dragCatch" ondragover="event.preventDefault();" ondrop="drop(event)"></div></td>
+					</tr>
+					<tr class="plannerCourseRow">
+						<td><div class="dragCatch" ondragover="event.preventDefault();" ondrop="drop(event)"></div></td>
+						<td><div class="dragCatch" ondragover="event.preventDefault();" ondrop="drop(event)"></div></td>
+						<td><div class="dragCatch" ondragover="event.preventDefault();" ondrop="drop(event)"></div></td>
+						<td><div class="dragCatch" ondragover="event.preventDefault();" ondrop="drop(event)">
+							<p id="c3000" class="course" tabindex="0" draggable=true ondragstart="drag(event)" onclick="courseClick(this.id)">Course 3</p></td></div></td>
+						
+					</tr>
+				</tbody>
+			</table>
+		</section>
+		<aside id="courseDetails">
+			<!-- shows details of the currently selected course -->
+			<a id="closeCourseDetails" href="javascript:void(0)" onclick="clearCourseDetails()">X</a>
+			<h2 id="name"></h2>
+			<label id="credits"></label>
+			<br>
+			<label id="desc"></label>
+		</aside>
+	</main>
+	<footer>
+		<p>Developed by Quaris</p>
+		<p><span class="line">Disclaimer: I cannot guarantee the information contained within this tool or the checks made by this tool are accurate.</span>
+		   <span class="line">This tool is meant to aid in, not replace, a thorough examination of an academic plan.</span></p>
+		<br>
+	</footer>
 </body>
 </html>
