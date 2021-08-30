@@ -12,7 +12,7 @@ function setCourseDetails(course) {
     let element = document.getElementById("courseDetails");
     element.children.name.innerHTML = course.getFullName();
     element.children.desc.innerHTML = course.getDescription();
-    element.children.credits.innerHTML = course.getCredits() == 1 ? "1 credit" : course.getCredits() + " credits";
+    element.children.credits.innerHTML = course.getCredits();
     element.style.display = "block";
 }
 
