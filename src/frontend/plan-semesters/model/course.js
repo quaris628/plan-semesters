@@ -3,18 +3,27 @@ class Course {
     #fullName;
     #credits;
     #description;
-    constructor(id, fullName, credits, description) {
+	#reqs;
+	
+    constructor(id, fullName, credits, description="", reqs=[]) {
         this.#id = id;
         this.#fullName = fullName;
         this.#credits = credits;
         this.#description = description;
+		this.#reqs = reqs;
     }
+	
     getId() { return this.#id; }
     getFullName() { return this.#fullName; }
     getCredits() { return this.#credits; }
     getDescription() { return this.#description; }
-    static dict = new Map();
-    static addToDict(course) {
+	getReqs() { return this.#reqs; }
+    
+}
+
+class CourseDict {
+	static dict = new Map();
+	static addToDict(course) {
         this.dict.set(course.getId(), course);
     }
 }

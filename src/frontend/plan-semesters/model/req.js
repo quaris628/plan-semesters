@@ -8,12 +8,16 @@ function ReqCourse(course, comments) {
 	this.isSatisfied = (plan) => {
 		// may need to revise later
 		if (plan.GetCourses().Contains(#course)) {
-			plan.
+			plan; // ??? test if course is being taken in an ok semester
 		} else {
 			return false;
 		}
 		
 		this.#course
+	}
+	
+	this.getAllCourses() = () => {
+		return [this.course];
 	}
 	
 	this.getCourse = () => { return #course; }
@@ -30,10 +34,18 @@ function ReqAnd() {
 	this.#reqs = arguments;
 	
 	this.isSatisfied = (plan) => {
-		for (let i = 0; i < arguments.length; i++) {
-			if (arguments[i].isSatisfied(plan) === false) { return false; }
+		for (let i = 0; i < #reqs.length; i++) {
+			if (#reqs[i].isSatisfied(plan) === false) { return false; }
 		}
 		return true;
+	}
+	
+	this.getAllCourses() = () => {
+		let toReturn = [];
+		for (let i = 0; i < #reqs.length; i++) {
+			toReturn.concat(#reqs[i].getAllCourses());
+		}
+		return toReturn;
 	}
 }
 
@@ -51,6 +63,14 @@ function ReqOr() {
 			if (#reqs[i].isSatisfied(plan) === true) { return true; }
 		}
 		return false;
+	}
+	
+	this.getAllCourses() = () => {
+		let toReturn = [];
+		for (let i = 0; i < #reqs.length; i++) {
+			toReturn.concat(#reqs[i].getAllCourses());
+		}
+		return toReturn;
 	}
 }
 
@@ -75,6 +95,14 @@ function ReqQuota(n) {
 		}
 		return false;
 	}
+	
+	this.getAllCourses() = () => {
+		let toReturn = [];
+		for (let i = 0; i < #reqs.length; i++) {
+			toReturn.concat(#reqs[i].getAllCourses());
+		}
+		return toReturn;
+	}
 }
 
 
@@ -97,5 +125,13 @@ function ReqCreditsQuota(n) {
 			}
 		}
 		return false;
+	}
+	
+	this.getAllCourses() = () => {
+		let toReturn = [];
+		for (let i = 0; i < #reqs.length; i++) {
+			toReturn.concat(#reqs[i].getAllCourses());
+		}
+		return toReturn;
 	}
 }
