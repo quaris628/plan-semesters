@@ -17,42 +17,36 @@ main
 	padding: 10px;
 }
 
-#planArea
+#reqList li
 {
-    overflow-x: auto;
+	height: 35px /* .dragCatch height + 1 */
+}
+
+#plannerTableMain
+{
+	overflow-x: auto;
     overflow-y: auto;
 	padding-left: 1px;
 	padding-right: 1px;
+	
 }
 
-#courseDetails
-{
-    margin-left: auto;
-    display: none;
-    width: 150px;
-}
-
-#plannerTable
+.plannerTable
 {
     border-collapse: collapse;
 	
 }
 
-#plannerTable tbody tr
+.plannerTable tbody tr
 {
     width: max-content;
 	
 }
 
-#plannerTable tbody td
+.plannerTable tbody td
 {
     width: 120px;
     border: 1px solid gray;
-}
-
-#reqList li
-{
-	height: 35px /* .dragCatch height + 1 */
 }
 
 .dragCatch
@@ -77,6 +71,14 @@ main
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+
+#courseDetails
+{
+    margin-left: auto;
+    display: none;
+    width: 150px;
 }
 
 span.line

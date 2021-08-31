@@ -70,38 +70,58 @@
 			</ul>
 		</section>
 		<!-- table in which to drag and drop things, scrollable -->
-		<section id="planArea">
-			<table id="plannerTable">
+		<section>
+			<table id="plannerTableUnplanned" class="plannerTable">
+				<thead>
+					<tr><th>Unplanned</th></tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td><div class="dragCatch" ondragover="event.preventDefault();" ondrop="drop(event)">
+							<p id="c1000" class="course" tabindex="0" draggable=true ondragstart="drag(event)" onclick="courseClick(this.id)">Course 1</p>
+						</div></td>
+					</tr>
+					<tr>
+						<td><div class="dragCatch" ondragover="event.preventDefault();" ondrop="drop(event)">
+							<p id="c2000" class="course" tabindex="0" draggable=true ondragstart="drag(event)" onclick="courseClick(this.id)">Course 2</p>
+						</div></td>
+					</tr>
+					<tr>
+						<td><div class="dragCatch" ondragover="event.preventDefault();" ondrop="drop(event)">
+							<p id="c3000" class="course" tabindex="0" draggable=true ondragstart="drag(event)" onclick="courseClick(this.id)">Course 3</p>
+						</div></td>
+					</tr>
+				</tbody>
+			</table>
+		</section>
+		<section id="plannerTableMain">
+			<table class="plannerTable">
 				<thead>
 					<tr>
-						<th><h4>Satisfied</h4></th>
-						<th><h4>Semester 1</h4></th>
-						<th><h4>Semester 2</h4></th>
-						<th><h4>Semester 3</h4></th>
+						<th>Satisfied</th>
+						<th>Semester 1</th>
+						<th>Semester 2</th>
+						<th>Semester 3</th>
 					</tr>
 				</thead>
 				<tbody>
 					<tr>
 						<td><div class="dragCatch" ondragover="event.preventDefault();" ondrop="drop(event)"></div></td>
-						<td><div class="dragCatch" ondragover="event.preventDefault();" ondrop="drop(event)">
-							<p id="c1000" class="course" tabindex="0" draggable=true ondragstart="drag(event)" onclick="courseClick(this.id)">Course 1</p></td></div></td>
+						<td><div class="dragCatch" ondragover="event.preventDefault();" ondrop="drop(event)"></div></td>
 						<td><div class="dragCatch" ondragover="event.preventDefault();" ondrop="drop(event)"></div></td>
 						<td><div class="dragCatch" ondragover="event.preventDefault();" ondrop="drop(event)"></div></td>
 					</tr>
 					<tr>
 						<td><div class="dragCatch" ondragover="event.preventDefault();" ondrop="drop(event)"></div></td>
 						<td><div class="dragCatch" ondragover="event.preventDefault();" ondrop="drop(event)"></div></td>
-						<td><div class="dragCatch" ondragover="event.preventDefault();" ondrop="drop(event)">
-							<p id="c2000" class="course" tabindex="0" draggable=true ondragstart="drag(event)" onclick="courseClick(this.id)">Course 2</p></td></div></td>
+						<td><div class="dragCatch" ondragover="event.preventDefault();" ondrop="drop(event)"></div></td>
 						<td><div class="dragCatch" ondragover="event.preventDefault();" ondrop="drop(event)"></div></td>
 					</tr>
-					<tr class="plannerCourseRow">
+					<tr>
 						<td><div class="dragCatch" ondragover="event.preventDefault();" ondrop="drop(event)"></div></td>
 						<td><div class="dragCatch" ondragover="event.preventDefault();" ondrop="drop(event)"></div></td>
 						<td><div class="dragCatch" ondragover="event.preventDefault();" ondrop="drop(event)"></div></td>
-						<td><div class="dragCatch" ondragover="event.preventDefault();" ondrop="drop(event)">
-							<p id="c3000" class="course" tabindex="0" draggable=true ondragstart="drag(event)" onclick="courseClick(this.id)">Course 3</p></td></div></td>
-						
+						<td><div class="dragCatch" ondragover="event.preventDefault();" ondrop="drop(event)"></div></td>
 					</tr>
 				</tbody>
 			</table>
