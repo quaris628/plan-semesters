@@ -20,6 +20,7 @@ const _reqsList = document.getElementById("reqList") // unordered list
 
 class PlanView {
 	
+	
 	constructor() {
 		
 	}
@@ -28,7 +29,6 @@ class PlanView {
 	// courses list management
 	
 	addCourse(course) {
-		this._uniqueCourses.push(course);
 		
 		let courseLi = document.createElement("li");
 		courseLi.setAttribute("id", course.getId());
@@ -40,7 +40,6 @@ class PlanView {
 	}
 	
 	clearCourses() {
-		this._uniqueCourses = [];
 		
 		// clear reqs list
 		while (_reqsList.hasChildNodes()) {
