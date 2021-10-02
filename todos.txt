@@ -1,6 +1,7 @@
 (up-to-date-ness may be unreliable, we'll see)
-1. Fix server.js (?) so .js and .css files properly work when loading the .html in browser
-2. Make db insertion script for sample data, maybe uwplatt's se major
+
+1. Make unplanned and planner tables update rows based on checked degrees
 
 Later:
 1. Add quota reqs (db diagram, html req manager...)
+2. Make db insertion script for sample data, maybe uwplatt's se major

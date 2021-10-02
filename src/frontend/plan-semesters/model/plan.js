@@ -19,34 +19,32 @@ var MyPlan = (function () {
 
 class Plan {
 	
+	_degrees;
+	_uniqueCourses;
+	
 	constructor() {
 		this._degrees = [];
-		this._uniqueCourses = {};
+		this._uniqueCourses = new UniqueCourses();
 	}
 	
 	addDegree(degree) {
-		let allCourses = degree.getAllCourses();
-		for (let i = 0; i < allCourses.length; i++) {
-			if (this._uniqueCourses[allCourses[i].getId()] === undefined) {
-				this._uniqueCourses[allCourses[i].getId()] = -1;
-			}
-		}
 		this._degrees.push(degree);
-		
-		// todo: update view to reflect change in the course list
+		this._uniqueCourses.addDegreeCourses(degree);
 	}
 	
 	removeDegree(degree) {
+		// remove degree from list
 		let index = this._degrees.indexOf(degree);
 		this._degrees.splice(index, 1);
 		
+		// clear unique courses
+		this._uniqueCourses.clear();
+		
 		// re-generate unique courses
-		this._uniqueCourses = {};
 		for (let i = 0; i < this._degrees.length; i++) {
-			addDegree(this._degrees[i]);
+			this._uniqueCourses.addDegreeCourses(this._degrees[i]);
 		}
 		
-		// todo: update view to reflect change in the course list
 	}
 	
 	// checks for validity should be done before calling this function

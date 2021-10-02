@@ -19,8 +19,8 @@
 	<script src="model/course.js" defer></script>
 	<script src="model/degree.js" defer></script>
 	<script src="model/plan.js" defer></script>
-	
-	
+	<script src="model/uniqueCourses.js" defer></script>
+	<script src="view/planView.js" defer></script>
 	
 	
 	<meta property="og:title" content="Plan My Semesters">
@@ -63,8 +63,8 @@
 			<h3>Select Degree(s)</h3>
 			<ul>
 				<li><input type="checkbox" id="SE Major" oninput="toggleDegree(this)"><label>SE Major</label></li>
-				<li><input type="checkbox" id="csCheck"><label>CS Major</label></li>
-				<li><input type="checkbox" id="mathCheck"><label>Math Minor</label></li>
+				<li><input type="checkbox" id="CS Major" oninput="toggleDegree(this)"><label>CS Major</label></li>
+				<li><input type="checkbox" id="Math Minor" oninput="toggleDegree(this)"><label>Math Minor</label></li>
 			</ul>
 		</section>
 	
@@ -72,9 +72,7 @@
 		<section>
 			<h3>Requirements</h3>
 			<ul id="reqList">
-				<li>Course 1</li>
-				<li>Course 2</li>
-				<li>Course 3</li>
+				
 			</ul>
 		</section>
 		<!-- table in which to drag and drop things, scrollable -->
@@ -144,7 +142,7 @@
 		</aside>
 	</main>
 	<footer>
-		<p>Developed by Quaris</p>
+		<p>Developed by Quaris - quaris314@gmail.com</p>
 		<p><span class="line">Disclaimer: I cannot guarantee the information contained within this tool or the checks made by this tool are accurate.</span>
 		   <span class="line">This tool is meant to aid in, not replace, a thorough examination of an academic plan.</span></p>
 		<br>
