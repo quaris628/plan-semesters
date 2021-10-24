@@ -5,3 +5,8 @@
 Later:
 1. Add quota reqs (db diagram, html req manager...)
 2. Make db insertion script for sample data, maybe uwplatt's se major
+
+Other more abstract ideas:
+make optional-set courses have a drop-down inside the courses table to change to any other valid course?
+
+Settings idea, "[check] Fall [check] Spring [check] Summer [check] Winterim" Semesters Filter
