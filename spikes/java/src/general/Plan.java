@@ -5,7 +5,8 @@ package general;
 
 import semesters.Semester;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 import course.Course;
@@ -17,18 +18,42 @@ import degree.Degree;
  */
 public class Plan {
 	private Map<Course, Semester> coursesTaking;
-	private LinkedList<Degree> degrees;
+	private ArrayList<Degree> degrees;
 	
 	public Plan() {
-		// TODO?
+		coursesTaking = new HashMap<Course, Semester>();
+		degrees = new ArrayList<Degree>();
 	}
 	
+	// O(n)
 	public void addDegree(Degree degree) {
-		// TODO
+		if (!degrees.contains(degree)) {
+			degrees.add(degree);
+			
+			// add all courses of that degree that weren't already there
+			for (Course course : degree.getAllCourses()) {
+				if (!coursesTaking.containsKey(course)) {
+					coursesTaking.put(course, Semester.UNPLANNED);
+				}
+			}
+		}
 	}
 	
-	public void removeDegree(Degree degree) {
-		// TODO
+	// O(n)
+	public void removeDegree(Degree degreeToRemove) {
+		if (degrees.contains(degreeToRemove)) {
+			degrees.remove(degreeToRemove);
+			
+			// re-add courses of all other degrees
+			// can't just remove courses of removing degree, there may be overlap
+			Map<Course, Semester> newCoursesTaking = new HashMap<Course, Semester>();
+			for (Degree degreeToKeep : degrees) {
+				for (Course course : degreeToKeep.getAllCourses()) {
+					newCoursesTaking.put(course, coursesTaking.get(course));
+				}
+			}
+			coursesTaking = newCoursesTaking;
+		}
 	}
 	
 	public void take(Course course, Semester semester) {
