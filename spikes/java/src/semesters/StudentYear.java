@@ -4,6 +4,7 @@
 package semesters;
 
 /**
+ * Complete
  * @author Quaris
  *
  */
@@ -22,4 +23,11 @@ public enum StudentYear {
 		if (this == FRESHMAN) { return null; }
 		return StudentYear.values()[this.ordinal() - 1];
 	}
+	
+	@Override
+	public String toString() {
+		// Capitalize first letter, remaining are lowercase
+		return this.name().substring(0, 1) + this.name().substring(1).toLowerCase();
+	}
+	
 }

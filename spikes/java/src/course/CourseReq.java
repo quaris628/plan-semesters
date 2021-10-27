@@ -6,6 +6,7 @@ package course;
 import general.Plan;
 
 /**
+ * Complete
  * @author Quaris
  *
  */

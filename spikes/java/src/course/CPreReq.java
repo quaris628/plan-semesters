@@ -4,8 +4,10 @@
 package course;
 
 import general.Plan;
+import semesters.Semester;
 
 /**
+ * Complete, 26 Oct
  * @author Quaris
  *
  */
@@ -20,8 +22,9 @@ public class CPreReq implements CourseReq {
 	
 	@Override
 	public boolean isSatisfied(Plan plan, Course course) {
-		// TODO Auto-generated method stub
-		return false;
+		Semester unlockedCourseSemester = plan.getSemesterOf(course);
+		Semester coReqSemester = plan.getSemesterOf(this.course);
+		return coReqSemester.compareTo(unlockedCourseSemester) < 0;
 	}
 
 	@Override
@@ -36,7 +39,6 @@ public class CPreReq implements CourseReq {
 	
 	@Override
 	public String toString() {
-		// TODO
-		return null;
+		return "PreReq:" + course.toString();
 	}
 }

@@ -6,6 +6,7 @@ package course;
 import general.Plan;
 
 /**
+ * Complete 26 Oct
  * @author Quaris
  *
  */
@@ -28,7 +29,11 @@ public class CReqOr implements CourseReq {
 	
 	@Override
 	public boolean isSatisfied(Plan plan, Course course) {
-		// TODO Auto-generated method stub
+		for (CourseReq req : reqs) {
+			if (req.isSatisfied(plan, course)) {
+				return true;
+			}
+		}
 		return false;
 	}
 	
@@ -44,7 +49,13 @@ public class CReqOr implements CourseReq {
 	
 	@Override
 	public String toString() {
-		// TODO
-		return null;
+		// e.g. "( PreReq:CS1430 or CoReq:CS2130 )" 
+		StringBuilder toReturn = new StringBuilder("( ");
+		for (CourseReq req : reqs) {
+			toReturn.append(req.toString());
+			toReturn.append(" or ");
+		}
+		toReturn.replace(toReturn.length() - " or ".length(), toReturn.length(), " )");
+		return toReturn.toString();
 	}
 }

@@ -6,6 +6,7 @@ package course;
 import general.Plan;
 
 /**
+ * Complete 26 Oct
  * @author Quaris
  *
  */
@@ -28,8 +29,12 @@ public class CReqAnd implements CourseReq {
 	
 	@Override
 	public boolean isSatisfied(Plan plan, Course course) {
-		// TODO Auto-generated method stub
-		return false;
+		for (CourseReq req : reqs) {
+			if (!req.isSatisfied(plan, course)) {
+				return false;
+			}
+		}
+		return true;
 	}
 	
 	@Override
@@ -44,7 +49,13 @@ public class CReqAnd implements CourseReq {
 	
 	@Override
 	public String toString() {
-		// TODO
-		return null;
+		// e.g. "( PreReq:CS1430 and CoReq:CS2130 and ( PreReq:Math1050 or PreReq:Math2340 ) )" 
+		StringBuilder toReturn = new StringBuilder("( ");
+		for (CourseReq req : reqs) {
+			toReturn.append(req.toString());
+			toReturn.append(" and ");
+		}
+		toReturn.replace(toReturn.length() - " and ".length(), toReturn.length(), " )");
+		return toReturn.toString();
 	}
 }

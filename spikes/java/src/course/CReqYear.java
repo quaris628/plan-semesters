@@ -7,6 +7,7 @@ import general.Plan;
 import semesters.StudentYear;
 
 /**
+ * Complete 26 Oct
  * @author Quaris
  *
  */
@@ -21,8 +22,8 @@ public class CReqYear implements CourseReq {
 	
 	@Override
 	public boolean isSatisfied(Plan plan, Course course) {
-		// TODO Auto-generated method stub
-		return false;
+		StudentYear plannedYear = plan.getSemesterOf(course).getStudentYear();
+		return plannedYear.compareTo(year) >= 0;
 	}
 	
 	@Override
@@ -37,7 +38,6 @@ public class CReqYear implements CourseReq {
 	
 	@Override
 	public String toString() {
-		// TODO
-		return null;
+		return year.toString() + " Standing";
 	}
 }

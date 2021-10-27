@@ -4,39 +4,64 @@
 package course;
 
 /**
+ * Complete, 26 Oct
  * @author Quaris
  *
  */
 public class Course {
 	
-	private int id;
-	private String dept;
-	private String fullName;
+	private String id; // e.g. "CS1430"
+	private String dept; // e.g. "Computer Science"
+	private String fullName; // e.g. "Intro to Programming"
 	private int credits;
 	private String description;
 	private CourseReq reqs;
 	private String comment;
 	
-	public Course(int id, String dept, String fullName, int credits) {
-		// TODO
+	public Course(String id, String dept, String fullName, int credits) {
+		this.id = id;
+		this.dept = dept;
+		this.fullName = fullName;
+		this.credits = credits;
+		this.description = null;
+		this.reqs = null;
+		this.comment = null;
 	}
 	
-	public Course(int id, String dept, String fullName, int credits,
+	public Course(String id, String dept, String fullName, int credits,
 			String description) {
-		// TODO
+		this.id = id;
+		this.dept = dept;
+		this.fullName = fullName;
+		this.credits = credits;
+		this.description = description;
+		this.reqs = null;
+		this.comment = null;
 	}
 	
-	public Course(int id, String dept, String fullName, int credits,
+	public Course(String id, String dept, String fullName, int credits,
 			CourseReq reqs) {
-		// TODO
+		this.id = id;
+		this.dept = dept;
+		this.fullName = fullName;
+		this.credits = credits;
+		this.description = null;
+		this.reqs = reqs;
+		this.comment = null;
 	}
 	
-	public Course(int id, String dept, String fullName, int credits,
+	public Course(String id, String dept, String fullName, int credits,
 			String description, CourseReq reqs) {
-		// TODO
+		this.id = id;
+		this.dept = dept;
+		this.fullName = fullName;
+		this.credits = credits;
+		this.description = description;
+		this.reqs = reqs;
+		this.comment = null;
 	}
 	
-	public int getId() {
+	public String getId() {
 		return id;
 	}
 
@@ -70,14 +95,14 @@ public class Course {
 
 	@Override
 	public boolean equals(Object o) {
-		// TODO
-		return false;
+		if (this == o) { return true; }
+		if (!(o instanceof Course)) { return false; }
+		return this.id.equals(((Course)o).id);
 	}
 	
 	@Override
 	public String toString() {
-		// TODO
-		return null;
+		return id;
 	}
 	
 }

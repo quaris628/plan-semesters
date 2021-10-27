@@ -90,6 +90,12 @@ public class Semester implements Comparable<Semester> {
 		return 0;
 	}
 	
+	/**
+	 * @return for s1.compareTo(s2),
+	 * 		    1 if s1 > s2
+	 * 			0 if s1 == s2
+	 * 		   -1 if s1 < s2
+	 */
 	@Override
 	public int compareTo(Semester s) {
 		if (this.n == UNPLANNED_INDEX) { return -1; } // so prereq checks work well
