@@ -14,6 +14,8 @@ public enum StudentYear {
 	JUNIOR,
 	SENIOR;
 	
+	public static final int CREDITS_PER_YEAR_STATUS = 30;
+	
 	public StudentYear getNext() {
 		if (this == SENIOR) { return null; }
 		return StudentYear.values()[this.ordinal() + 1];
@@ -22,6 +24,10 @@ public enum StudentYear {
 	public StudentYear getPrev() {
 		if (this == FRESHMAN) { return null; }
 		return StudentYear.values()[this.ordinal() - 1];
+	}
+	
+	public static StudentYear getStudentYear(int credits) {
+		return StudentYear.values()[credits / CREDITS_PER_YEAR_STATUS];
 	}
 	
 	@Override

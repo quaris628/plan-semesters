@@ -4,7 +4,7 @@
 package course;
 
 import general.Plan;
-import semesters.Semester;
+import semesters.SemesterList;
 
 /**
  * Complete, 26 Oct
@@ -22,8 +22,8 @@ public class CCoReq implements CourseReq {
 	
 	@Override
 	public boolean isSatisfied(Plan plan, Course course) {
-		Semester unlockedCourseSemester = plan.getSemesterOf(course);
-		Semester coReqSemester = plan.getSemesterOf(this.course);
+		SemesterList unlockedCourseSemester = plan.getSemesterOf(course);
+		SemesterList coReqSemester = plan.getSemesterOf(this.course);
 		return coReqSemester.compareTo(unlockedCourseSemester) <= 0;
 	}
 

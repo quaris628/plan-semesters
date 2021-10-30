@@ -3,7 +3,7 @@
  */
 package general;
 
-import semesters.Semester;
+import semesters.SemesterList;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,12 +17,21 @@ import degree.Degree;
  *
  */
 public class Plan {
-	private Map<Course, Semester> coursesTaking;
+	
+	private static final int NUM_STARTING_SEMESTERS = 4; // working on?
+	
+	private Map<Course, SemesterList> coursesTaking;
 	private ArrayList<Degree> degrees;
+	private SemesterList lastSemester; // working on?
 	
 	public Plan() {
-		coursesTaking = new HashMap<Course, Semester>();
+		coursesTaking = new HashMap<Course, SemesterList>();
 		degrees = new ArrayList<Degree>();
+		//lastSemester = SemesterList.FIRST;
+		// TODO
+		for (int i = 1; i < NUM_STARTING_SEMESTERS; i++) {
+			lastSemester = lastSemester.getNext();
+		}
 	}
 	
 	// O(n)
@@ -33,7 +42,7 @@ public class Plan {
 			// add all courses of that degree that weren't already there
 			for (Course course : degree.getAllCourses()) {
 				if (!coursesTaking.containsKey(course)) {
-					coursesTaking.put(course, Semester.UNPLANNED);
+					coursesTaking.put(course, SemesterList.UNPLANNED);
 				}
 			}
 		}
@@ -46,7 +55,7 @@ public class Plan {
 			
 			// re-add courses of all other degrees
 			// can't just remove courses of removing degree, there may be overlap
-			Map<Course, Semester> newCoursesTaking = new HashMap<Course, Semester>();
+			Map<Course, SemesterList> newCoursesTaking = new HashMap<Course, SemesterList>();
 			for (Degree degreeToKeep : degrees) {
 				for (Course course : degreeToKeep.getAllCourses()) {
 					newCoursesTaking.put(course, coursesTaking.get(course));
@@ -56,32 +65,29 @@ public class Plan {
 		}
 	}
 	
-	public void take(Course course, Semester semester) {
-		// TODO
+	public void take(Course course, SemesterList semester) {
+		if (coursesTaking.containsKey(course)) {
+			coursesTaking.put(course, semester);
+		} else {
+			throw new IllegalArgumentException("course does not exist in the plan");
+		}
 	}
 	
-	public Semester getSemesterOf(Course course) {
-		// TODO
-		return null;
+	public SemesterList getSemesterOf(Course course) {
+		return coursesTaking.get(course);
 	}
 	
-	public Course[] getCoursesOf(Semester semester) {
+	public Course[] getCoursesOf(SemesterList semester) {
 		// TODO
 		return null;
 	}
 	
 	public Course[] getAllCourses() {
-		// TODO
-		return null;
+		return (Course[])coursesTaking.keySet().toArray();
 	}
 	
-	public Semester getFirstSemester() {
-		// TODO
-		return null;
-	}
-	
-	public Semester getLastSemester() {
-		// TODO
+	public SemesterList getLastSemester() {
+		// TODO working on now?
 		return null;
 	}
 	
