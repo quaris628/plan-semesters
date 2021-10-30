@@ -15,7 +15,8 @@ import course.Course;
 import degree.Degree;
 
 /**
- * TODO revisit skeleton
+ * TODO revisit skeleton of this class
+ * TODO write implementation of this class
  * @author Quaris
  *
  */
