@@ -3,6 +3,8 @@
  */
 package general;
 
+import semesters.Season;
+import semesters.Semester;
 import semesters.SemesterList;
 
 import java.util.ArrayList;
@@ -13,36 +15,35 @@ import course.Course;
 import degree.Degree;
 
 /**
+ * TODO revisit skeleton
  * @author Quaris
  *
  */
 public class Plan {
 	
-	private static final int NUM_STARTING_SEMESTERS = 4; // working on?
+	public static final Season DEFAULT_STARTING_SEASON = Season.FALL;
 	
-	private Map<Course, SemesterList> coursesTaking;
 	private ArrayList<Degree> degrees;
-	private SemesterList lastSemester; // working on?
+	private SemesterList semesters;
+	private Map<Course, Semester> courses;
 	
 	public Plan() {
-		coursesTaking = new HashMap<Course, SemesterList>();
 		degrees = new ArrayList<Degree>();
-		//lastSemester = SemesterList.FIRST;
-		// TODO
-		for (int i = 1; i < NUM_STARTING_SEMESTERS; i++) {
-			lastSemester = lastSemester.getNext();
-		}
+		semesters = new SemesterList(0, DEFAULT_STARTING_SEASON);
+		courses = new HashMap<Course, Semester>();
+		
+		
 	}
 	
-	// O(n)
 	public void addDegree(Degree degree) {
 		if (!degrees.contains(degree)) {
 			degrees.add(degree);
 			
 			// add all courses of that degree that weren't already there
 			for (Course course : degree.getAllCourses()) {
-				if (!coursesTaking.containsKey(course)) {
-					coursesTaking.put(course, SemesterList.UNPLANNED);
+				if (!courses.containsKey(course)) {
+					// TODO
+					//coursesTaking.put(course, SemesterList.UNPLANNED);
 				}
 			}
 		}
@@ -55,38 +56,38 @@ public class Plan {
 			
 			// re-add courses of all other degrees
 			// can't just remove courses of removing degree, there may be overlap
-			Map<Course, SemesterList> newCoursesTaking = new HashMap<Course, SemesterList>();
+			Map<Course, Semester> newCoursesTaking = new HashMap<Course, Semester>();
 			for (Degree degreeToKeep : degrees) {
 				for (Course course : degreeToKeep.getAllCourses()) {
-					newCoursesTaking.put(course, coursesTaking.get(course));
+					newCoursesTaking.put(course, courses.get(course));
 				}
 			}
-			coursesTaking = newCoursesTaking;
+			courses = newCoursesTaking;
 		}
 	}
 	
-	public void take(Course course, SemesterList semester) {
-		if (coursesTaking.containsKey(course)) {
-			coursesTaking.put(course, semester);
+	public void take(Course course, Semester semester) {
+		if (courses.containsKey(course)) {
+			courses.put(course, semester);
 		} else {
 			throw new IllegalArgumentException("course does not exist in the plan");
 		}
 	}
 	
-	public SemesterList getSemesterOf(Course course) {
-		return coursesTaking.get(course);
+	public Semester getSemesterOf(Course course) {
+		return courses.get(course);
 	}
 	
-	public Course[] getCoursesOf(SemesterList semester) {
+	public Course[] getCoursesOf(Semester semester) {
 		// TODO
 		return null;
 	}
 	
 	public Course[] getAllCourses() {
-		return (Course[])coursesTaking.keySet().toArray();
+		return (Course[])courses.keySet().toArray();
 	}
 	
-	public SemesterList getLastSemester() {
+	public Semester getLastSemester() {
 		// TODO working on now?
 		return null;
 	}

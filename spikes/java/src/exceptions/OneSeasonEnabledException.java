@@ -4,10 +4,11 @@
 package exceptions;
 
 /**
+ * Complete 30 Oct
  * @author Quaris
  *
  */
-public class OneSeasonEnabledException extends Exception {
+public class OneSeasonEnabledException extends RuntimeException {
 	
 	/**
 	 * Auto-generated from an eclipse suggestion. idk what it is.
@@ -22,32 +23,19 @@ public class OneSeasonEnabledException extends Exception {
 		super(message);
 	}
 
-	/**
-	 * @param cause
-	 */
 	public OneSeasonEnabledException(Throwable cause) {
 		super(cause);
-		// TODO Auto-generated constructor stub
+		// Auto-generated constructor stub
 	}
 
-	/**
-	 * @param message
-	 * @param cause
-	 */
 	public OneSeasonEnabledException(String message, Throwable cause) {
 		super(message, cause);
-		// TODO Auto-generated constructor stub
+		// Auto-generated constructor stub
 	}
 
-	/**
-	 * @param message
-	 * @param cause
-	 * @param enableSuppression
-	 * @param writableStackTrace
-	 */
 	public OneSeasonEnabledException(String message, Throwable cause, boolean enableSuppression,
 			boolean writableStackTrace) {
 		super(message, cause, enableSuppression, writableStackTrace);
-		// TODO Auto-generated constructor stub
+		// Auto-generated constructor stub
 	}
 }

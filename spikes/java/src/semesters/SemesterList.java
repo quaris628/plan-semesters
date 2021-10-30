@@ -3,150 +3,117 @@
  */
 package semesters;
 
+import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.NoSuchElementException;
 
-import course.Course;
 import exceptions.CoursesNotClearedException;
 import exceptions.OneSeasonEnabledException;
 
 /**
- * Complete 26 Oct
+ * Complete 30 Oct
  * @author Quaris
  *
  */
-public class SemesterList implements Comparable<SemesterList> {
+public class SemesterList implements Iterable<Semester> {
 	
 	public static final boolean DEFAULT_ENABLED_SPRING = true;
 	public static final boolean DEFAULT_ENABLED_SUMMER = false;
 	public static final boolean DEFAULT_ENABLED_FALL = true;
 	public static final boolean DEFAULT_ENABLED_WINTER = false;
-	private static boolean[] enabledSeasons = new boolean[] {
-			DEFAULT_ENABLED_SPRING,
-			DEFAULT_ENABLED_SUMMER,
-			DEFAULT_ENABLED_FALL,
-			DEFAULT_ENABLED_WINTER };
 	
-	// MAX_VALUE is so prereq checks work elegantly when a course's semester is unplanned
-	public static final SemesterList UNPLANNED = new SemesterList(Integer.MAX_VALUE);
-	public static final SemesterList SATISFIED = new SemesterList(-1);
-	private static SemesterList first = new SemesterList(0);
-	private static SemesterList last = first;
-	private static int numSemesters = 1;
+	private int startingCredits;
+	private boolean[] enabledSeasons;
+	private Semester unplanned;
+	private Semester satisfied;
+	private LinkedList<Semester> semesters;
 	
-	// this class is a manual linked list
-	private int n;
-	private SemesterList next;
-	private SemesterList prev;
+	public SemesterList(int startingCredits, Season startingSeason) {
+		this.startingCredits = startingCredits;
+		enabledSeasons = new boolean[] {
+				DEFAULT_ENABLED_SPRING,
+				DEFAULT_ENABLED_SUMMER,
+				DEFAULT_ENABLED_FALL,
+				DEFAULT_ENABLED_WINTER };
+		// MAX and -1 are so .compareTo results work well for prereq checks
+		unplanned = new Semester(Integer.MAX_VALUE, null, null);
+		satisfied = new Semester(-1, null, null);
+		semesters = new LinkedList<Semester>();
+		semesters.add(new Semester(0, startingSeason, StudentYear.getStudentYear(startingCredits)));
+	}
 	
-	private Season season;
-	private LinkedList<Course> courses;
-	private int credits;
-	private int prevCumulativeCredits;
+	// --------------------------------
+	//  set/get initial conditions
+	// --------------------------------
 	
-	public SemesterList(int n) {
-		this.n = n;
-		this.next = null;
-		this.prev = null;
-		this.season = null;
-		this.courses = new LinkedList<Course>();
-		this.credits = 0;
-		this.prevCumulativeCredits = 0;
+	public void setStartingCredits(int startingCredits) {
+		this.startingCredits = startingCredits;
+		// refresh student year of all semesters
+		int cumulativeCredits = startingCredits;
+		for (Semester semester : semesters) {
+			semester.setStudentYear(StudentYear.getStudentYear(cumulativeCredits));
+			cumulativeCredits += semester.getTotalCredits();
+		}
+	}
+	
+	public int getStartingCredits() {
+		return startingCredits;
 	}
 
-	public static SemesterList getFirst() {
-		return first;
-	}
-	
-	public static SemesterList getLast() {
-		return last;
-	}
-	
-	/**
-	 * Set number of credits achieved prior to the first semester
-	 * (This does not include the credits of courses in SATISFIED -- these are included internally)
-	 * @param credits
-	 */
-	public static void setStartingCredits(int credits) {
-		first.prevCumulativeCredits = credits = SATISFIED.getCredits();
-	}
-	
-	public static int getNumSemesters() {
-		return numSemesters;
-	}
-	
-	/**
-	 * Gets next semester, forward in time
-	 * If no semester after this semester exists, creates a new semester 
-	 * @return next semester
-	 */
-	public SemesterList getNext() {
-		if (next == null) {
-			// create a new semester
-			next = new SemesterList(n + 1);
-			next.prev = this;
-			next.season = this.season.getNext();
-			while (!SemesterList.isEnabled(next.season)) {
-				next.season = next.season.getNext();
-			}
-			next.prevCumulativeCredits = this.prevCumulativeCredits + this.credits;
-			last = next;
-			numSemesters++;
+	public void setStartingSeason(Season season) {
+		Season seasonToSet = season;
+		// refresh season of all semesters
+		for (Semester semester : semesters) {
+			semester.setSeason(seasonToSet);
+			seasonToSet = this.getNextEnabledAfter(seasonToSet);
 		}
-		return next;
 	}
 	
-	/**
-	 * Gets previous semester, backward in time
-	 * If no semester before this semester exists, return null 
-	 * @return previous semester
-	 */
-	public SemesterList getPrev() {
-		return prev;
+	public Season getStartingSeason() {
+		return semesters.getFirst().getSeason();
 	}
-	
-	public boolean hasNext() {
-		return next != null;
-	}
-	
-	public boolean hasPrev() {
-		return prev != null;
-	}
-	
-	// TODO should probably write tests for this method, cuz there's so many things I could miss
-	public static void enable(Season seasonToEnable) {
+
+
+	// --------------------------------
+	//  manage Seasons
+	// --------------------------------
+
+	public void enable(Season seasonToEnable) {
+		if (enabledSeasons[seasonToEnable.ordinal()]) {
+			return;
+		}
+		
+		// calculate indices to insert semesters with new seasons at
+		
+		// calculate how many seasons are enabled (not counting the new addition)
+		int numEnabledSeasons = 0;
+		for (int i = 0; i < enabledSeasons.length; i++) {
+			if (enabledSeasons[i]) {
+				numEnabledSeasons++;
+			}
+		}
+		
+		// calculate index of first insertion point
+		int firstInsertIndex = 0;
+		Season seasonToInsertAfter = this.getNextEnabledBefore(seasonToEnable);
+		while (semesters.get(firstInsertIndex).getSeason()
+				!= seasonToInsertAfter) {
+			firstInsertIndex++;
+		}
+		
+		// This part is needlessly O(n^2), since linkedlist .add(index, item) is O(n) 
+		// TODO increase efficiency to O(n) with a manual linked list (iterate once over list)
+		for (int i = firstInsertIndex; i < semesters.size(); i+= numEnabledSeasons + 1) {
+			semesters.add(i, new Semester(i, seasonToEnable, null));
+		}
+		// refresh cumulative credits
+		this.setStartingCredits(this.getStartingCredits());
+		
 		enabledSeasons[seasonToEnable.ordinal()] = true;
-		
-		// get previous enabled season (there could be a gap where one semester is disabled)
-		Season prevEnabledSeason = seasonToEnable.getPrev();
-		while (!SemesterList.isEnabled(prevEnabledSeason)) {
-			prevEnabledSeason = prevEnabledSeason.getPrev();
-		}
-		
-		// insert new seasons between all semesters in the linked list
-		for (SemesterList semester = first; semester.hasNext(); semester = semester.getNext()) {
-			if (semester.season == prevEnabledSeason) {
-				// create new semester
-				SemesterList newSemester = new SemesterList(semester.n + 1);
-				// insert new semester into linked list
-				newSemester.next = semester.getNext();
-				newSemester.prev = semester;
-				semester.next.prev = newSemester;
-				semester.next = newSemester;
-				numSemesters++;
-				
-				newSemester.season = seasonToEnable;
-				// update cumulative credits when loop finished
-			}
-		}
-		
-		// force refresh of cumulative credits
-		setStartingCredits(first.prevCumulativeCredits);
 	}
 	
-	public static void disable(Season seasonToDisable)
+	public void disable(Season seasonToDisable)
 			throws CoursesNotClearedException, OneSeasonEnabledException {
-		
-		// if season already disabled, return and do nothing
 		if (!enabledSeasons[seasonToDisable.ordinal()]) {
 			return;
 		}
@@ -163,34 +130,31 @@ public class SemesterList implements Comparable<SemesterList> {
 			throw new OneSeasonEnabledException("Cannot disable the last enabled season");
 		}
 		
-		// if any semesters during this season have any courses, throw exception
-		for (SemesterList semester = first; semester.hasNext(); semester = semester.getNext()) {
-			if (semester.getSeason() == seasonToDisable && semester.getCourses().length > 0) {
-				throw new CoursesNotClearedException("Season must not contain any planned courses in order to be disabled");
+		// if any semesters during this season have any courses, throw CoursesNotClearedException
+		LinkedList<Semester> semestersToRemove = new LinkedList<Semester>();
+		for (Semester semester : semesters) {
+			if (semester.getSeason() == seasonToDisable) {
+				if (semester.getCourses().length > 0) {
+					throw new CoursesNotClearedException(seasonToDisable, semester);
+				}
+				semestersToRemove.add(semester);
 			}
 		}
 		
 		// Remove all semesters with the season from the linked list
-		for (SemesterList semester = first; semester.hasNext(); semester = semester.getNext()) {
-			if (semester.season == seasonToDisable) {
-				// remove semester from linked list
-				SemesterList prevSemester = semester.prev;
-				SemesterList nextSemester = semester.next;
-				prevSemester.next = nextSemester;
-				nextSemester.prev = prevSemester;
-			}
-		}
-		// force refresh of cumulative credits
-		setStartingCredits(first.prevCumulativeCredits);
+		semesters.removeAll(semestersToRemove);
+		
+		// refresh cumulative credits (=> refresh student years)
+		this.setStartingCredits(this.getStartingCredits());
 		
 		enabledSeasons[seasonToDisable.ordinal()] = false;
 	}
 	
-	public static boolean isEnabled(Season season) {
+	public boolean isEnabled(Season season) {
 		return enabledSeasons[season.ordinal()];
 	}
 	
-	public static Season getNextEnabled(Season season) {
+	public Season getNextEnabledAfter(Season season) {
 		Season toReturn = season.getNext();
 		while (!enabledSeasons[toReturn.ordinal()] ) {
 			toReturn = toReturn.getNext();
@@ -198,69 +162,52 @@ public class SemesterList implements Comparable<SemesterList> {
 		return toReturn;
 	}
 	
-	public static Season getPrevEnabled(Season season) {
+	public Season getNextEnabledBefore(Season season) {
 		Season toReturn = season.getPrev();
 		while (!enabledSeasons[toReturn.ordinal()] ) {
 			toReturn = toReturn.getPrev();
 		}
 		return toReturn;
 	}
-	
-	public void setSeason(Season season) {
-		this.season = season;
-		// set season of prev
-		
-		// set season of next, recursively
-		next.setSeason(SemesterList.getNextEnabled(season));
+
+	// --------------------------------
+	//  get Semesters
+	// --------------------------------
+
+	public Semester getUnplanned() {
+		return unplanned;
 	}
 
-	public Season getSeason() {
-		return season;
+	public Semester getSatisfied() {
+		return satisfied;
 	}
-	
-	public StudentYear getStudentYear() {
-		// TODO total credits so far
-		return StudentYear.getStudentYear(getCredits());
-	}
-	
-	// course management
-	// update year status across all subsequent semesters
-	public void addCourse(Course course) {
-		courses.add(course);
-		credits += course.getCredits();
-		// TODO
-	}
-	
-	// update year status across all subsequent semesters
-	public void removeCourse(Course course) {
-		courses.remove(course);
-		credits -= course.getCredits();
-		// TODO
-	}
-	
-	public Course[] getCourses() {
-		// deep copy
-		return courses.toArray(new Course[courses.size()]);
-	}
-	
-	public int getCredits() {
-		return credits;
-	}
-	
-	/**
-	 * @return for s1.compareTo(s2),
-	 * 		    1 if s1 > s2
-	 * 			0 if s1 == s2
-	 * 		   -1 if s1 < s2
-	 */
+
+	// Iterable interface
 	@Override
-	public int compareTo(SemesterList s) {
-		return this.n - s.n;
+	public Iterator<Semester> iterator() {
+		return semesters.iterator();
 	}
+	
+	public int getNumSemesters() {
+		return semesters.size();
+	}
+	
+	public Semester getSemesterAfter(Semester semester) throws NoSuchElementException {
+		Iterator<Semester> iter = semesters.iterator();
+		while (iter.hasNext()) {
+			Semester s = iter.next();
+			if (s.equals(semester)) {
+				return iter.next();
+			}
+		}
+		throw new NoSuchElementException(semester.toString() + " was not found");
+	}
+	
+	// --------------------------------
 	
 	@Override
 	public String toString() {
-		return season.toString() + String.valueOf(n);
+		return "SemesterList[" + String.valueOf(semesters.size()) + "]"; 
 	}
 	
 }

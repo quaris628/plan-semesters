@@ -15,7 +15,7 @@ public class DReqCourse implements DegreeReq {
 	private Course course;
 	private String comment;
 	
-	public DReqCourse(Course coruse) {
+	public DReqCourse(Course course) {
 		this.course = course;
 	}
 	

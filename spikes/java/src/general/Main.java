@@ -1,21 +1,17 @@
 package general;
 
-/**
- * 
- */
 
 /**
+ * right now this is just for sandboxing
+ * 
  * @author Quaris
  *
  */
 public class Main {
 
-	/**
-	 * @param args
-	 */
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-
+		
+		
 	}
 
 }
