@@ -13,18 +13,17 @@ public class Degree {
 	private DegreeReq reqs;
 	private String name;
 	
-	// TODO
-	// constructor tbd -- should control construction so only
-	// certain pre-determined degrees may be chosen?
+	public Degree(String name, DegreeReq reqs) {
+		this.name = name;
+		this.reqs = reqs;
+	}
 	
 	public DegreeReq getReqirements() {
 		return reqs;
 	}
 	
-	// may not need?
 	public Course[] getAllCourses() {
-		// TODO
-		return null;
+		return reqs.getAllCourses();
 	}
 	
 	public String getName() {
@@ -33,8 +32,7 @@ public class Degree {
 	
 	@Override
 	public String toString() {
-		// TODO
-		return null;
+		return name;
 	}
 	
 }

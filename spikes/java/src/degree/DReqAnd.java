@@ -3,10 +3,12 @@
  */
 package degree;
 
+
 import course.Course;
 import general.Plan;
 
 /**
+ * Complete 31 Oct
  * @author Quaris
  *
  */
@@ -27,17 +29,32 @@ public class DReqAnd implements DegreeReq {
 		this.reqs = reqs;
 	}
 	
-	
 	@Override
 	public boolean isSatisfied(Plan plan) {
-		// TODO Auto-generated method stub
-		return false;
+		for (DegreeReq req : reqs) {
+			if (!req.isSatisfied(plan)) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	@Override
 	public Course[] getAllCourses() {
-		// TODO Auto-generated method stub
-		return null;
+		int n = 0;
+		for (DegreeReq req : reqs) {
+			n += req.getAllCourses().length;
+		}
+		Course[] allCourses = new Course[n];
+		
+		// copy arrays
+		int i = 0;
+		for (DegreeReq req : reqs) {
+			for (Course course : req.getAllCourses()) {
+				allCourses[i++] = course;
+			}
+		}
+		return allCourses;
 	}
 
 	@Override
@@ -52,7 +69,13 @@ public class DReqAnd implements DegreeReq {
 	
 	@Override
 	public String toString() {
-		// TODO
-		return null;
+		StringBuilder s = new StringBuilder("( ");
+		for (DegreeReq req : reqs) {
+			s.append(req.toString());
+			s.append(" and ");
+		}
+		s.replace(s.length() - " and ".length(), s.length(), " )");
+		return s.toString();
+		
 	}
 }

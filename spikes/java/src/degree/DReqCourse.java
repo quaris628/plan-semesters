@@ -7,6 +7,7 @@ import course.Course;
 import general.Plan;
 
 /**
+ * Complete 31 Oct
  * @author Quaris
  *
  */
@@ -19,16 +20,18 @@ public class DReqCourse implements DegreeReq {
 		this.course = course;
 	}
 	
+	public Course getCourse() {
+		return course;
+	}
+	
 	@Override
 	public boolean isSatisfied(Plan plan) {
-		// TODO Auto-generated method stub
-		return false;
+		return plan.getSemesterOf(course).getN() >= 0;
 	}
 
 	@Override
 	public Course[] getAllCourses() {
-		// TODO Auto-generated method stub
-		return null;
+		return new Course[] { course };
 	}
 
 	@Override
@@ -43,8 +46,10 @@ public class DReqCourse implements DegreeReq {
 	
 	@Override
 	public String toString() {
-		// TODO
-		return null;
+		if (comment != null) {
+			return course.toString() + ", " + comment;
+		}
+		return course.toString();
 	}
 
 }

@@ -14,13 +14,16 @@ import course.Course;
  */
 public class Semester implements Comparable<Semester> {
 
+	private SemesterList container;
+	
 	private int n;
 	private Season season;
 	private StudentYear studentYear;
 	private LinkedList<Course> courses;
 	private int totalCredits;
 	
-	public Semester(int n, Season season, StudentYear studentYear) {
+	public Semester(SemesterList container, int n, Season season, StudentYear studentYear) {
+		this.container = container;
 		this.n = n;
 		this.setSeason(season);
 		this.setStudentYear(studentYear);
@@ -44,23 +47,43 @@ public class Semester implements Comparable<Semester> {
 		this.studentYear = studentYear;
 	}
 	
+	/**
+	 * Does not add course if already present in this semester
+	 * @param course
+	 */
 	public void addCourse(Course course) {
-		courses.add(course);
-		totalCredits += course.getCredits();
+		if (!courses.contains(course)) {
+			courses.add(course);
+			totalCredits += course.getCredits();
+			if (container != null) {
+				container.refreshYears();
+			}
+		}
 	}
 	
 	public void removeCourse(Course course) {
 		courses.remove(course);
 		totalCredits -= course.getCredits();
+		if (container != null) {
+			container.refreshYears();
+		}
+	}
+	
+	public boolean hasCourse(Course course) {
+		return courses.contains(course);
 	}
 	
 	public Course[] getCourses() {
 		// deep copy
-		return (Course[])courses.toArray();
+		return (Course[])courses.toArray(new Course[courses.size()]);
 	}
 	
 	public int getTotalCredits() {
 		return totalCredits;
+	}
+	
+	public int getN() {
+		return n;
 	}
 	
 	@Override
@@ -70,7 +93,16 @@ public class Semester implements Comparable<Semester> {
 	
 	@Override
 	public String toString() {
-		return String.valueOf(n) + ":" + season.toString();
+		if (this == container.getUnplanned()) {
+			return "Unplanned";
+		} else if (this == container.getSatisfied()) {
+			return "Satisfied";
+		} else if (season == null) {
+			return "Unknown " + String.valueOf(n);
+		} else {
+			return season.toString() + " " + String.valueOf(n);
+		}
+		
 	}
 
 }

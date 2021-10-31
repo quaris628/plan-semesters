@@ -7,6 +7,7 @@ import course.Course;
 import general.Plan;
 
 /**
+ * Complete 31 Oct
  * @author Quaris
  *
  */
@@ -36,7 +37,12 @@ public class DReqOr implements DegreeReq {
 	}
 	
 	public void setSelection(DegreeReq choice) {
-		// TODO set selectionIndex
+		for (int i = 0; i < reqs.length; i++) {
+			if (reqs[i] == choice) {
+				selectionIndex = i;
+				return;
+			}
+		}
 	}
 	
 	public DegreeReq getSelection() {
@@ -45,14 +51,20 @@ public class DReqOr implements DegreeReq {
 	
 	@Override
 	public boolean isSatisfied(Plan plan) {
-		// TODO Auto-generated method stub
+		for (DegreeReq req : reqs) {
+			if (req.isSatisfied(plan)) {
+				return true;
+			}
+		}
 		return false;
 	}
 
 	@Override
 	public Course[] getAllCourses() {
-		// TODO Auto-generated method stub
-		return null;
+		if (selectionIndex < 0) {
+			return null;
+		}
+		return reqs[selectionIndex].getAllCourses();
 	}
 	
 	@Override
@@ -67,8 +79,14 @@ public class DReqOr implements DegreeReq {
 	
 	@Override
 	public String toString() {
-		// TODO
-		return null;
+		// e.g. "( PreReq:CS1430 or CoReq:CS2130 )" 
+		StringBuilder s = new StringBuilder("( ");
+		for (DegreeReq req : reqs) {
+			s.append(req.toString());
+			s.append(" or ");
+		}
+		s.replace(s.length() - " or ".length(), s.length(), " )");
+		return s.toString();
 	}
 
 }

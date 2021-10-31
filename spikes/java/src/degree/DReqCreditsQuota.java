@@ -4,9 +4,11 @@
 package degree;
 
 import course.Course;
+import exceptions.ItemNotFoundException;
 import general.Plan;
 
 /**
+ * Complete 31 Oct
  * @author Quaris
  *
  */
@@ -14,48 +16,97 @@ public class DReqCreditsQuota implements DegreeReq {
 
 	private DReqCourse[] reqs;
 	private int creditsQuota;
-	private int[] selectionIndices;
+	private boolean[] selected;
 	private String comment;
 	
 	public DReqCreditsQuota(DReqCourse[] reqs, int creditsQuota) {
 		this.reqs = reqs;
 		this.creditsQuota = creditsQuota;
-		selectionIndices = new int[reqs.length];
+		selected = new boolean[reqs.length];
 	}
 	
+	// TODO ?
+	/*
 	public DReqCreditsQuota(Course[] reqs, int creditsQuota) {
 		// TODO reqs from raw Courses
 		this.creditsQuota = creditsQuota;
 		selectionIndices = new int[reqs.length];
-	}
+	}*/
 	
 	public DegreeReq[] getOptions() {
 		return reqs;
 	}
 	
-	public DegreeReq getSelections() {
-		// TODO
-		return null;
+	public DegreeReq[] getSelections() {
+		int n = 0;
+		for (int i = 0; i < reqs.length; i++) {
+			if (selected[i]) {
+				n++;
+			}
+		}
+		DegreeReq[] selections = new DegreeReq[n];
+		int selectionIndex = 0;
+		for (int i = 0; i < reqs.length; i++) {
+			if (selected[i]) {
+				selections[selectionIndex++] = reqs[i];
+			}
+		}
+		return selections;
 	}
 	
-	public void addSelection(DegreeReq selection) {
-		// TODO set selectionIndices
+	/**
+	 * Does nothing if selection is already selected
+	 * Throws exception if selection not found
+	 */
+	public void select(DegreeReq selection) {
+		for (int i = 0; i < reqs.length; i++) {
+			if (reqs[i] == selection) {
+				selected[i] = true;
+			}
+		}
+		throw new ItemNotFoundException();
 	}
 	
-	public void removeSelection(DegreeReq selection) {
-		// TODO set selectionIndices
+	/**
+	 * Does nothing if deselection is already deselected
+	 * Throws exception if deselection not found
+	 */
+	public void deselect(DegreeReq deselection) {
+		for (int i = 0; i < reqs.length; i++) {
+			if (reqs[i] == deselection) {
+				selected[i] = false;
+			}
+		}
+		throw new ItemNotFoundException();
 	}
 	
 	@Override
 	public boolean isSatisfied(Plan plan) {
-		// TODO Auto-generated method stub
-		return false;
+		int totalCredits = 0;
+		for (DReqCourse reqCourse : reqs) {
+			if (reqCourse.isSatisfied(plan)) {
+				totalCredits += reqCourse.getCourse().getCredits();
+			}
+		}
+		return totalCredits >= creditsQuota;
 	}
 
 	@Override
 	public Course[] getAllCourses() {
-		// TODO Auto-generated method stub
-		return null;
+		int n = 0;
+		for (DegreeReq req : reqs) {
+			n += req.getAllCourses().length;
+		}
+		Course[] allCourses = new Course[n];
+		
+		// copy arrays
+		int i = 0;
+		for (DegreeReq req : reqs) {
+			for (Course course : req.getAllCourses()) {
+				allCourses[i++] = course;
+			}
+		}
+		return allCourses;
 	}
 	
 	@Override
@@ -70,8 +121,13 @@ public class DReqCreditsQuota implements DegreeReq {
 	
 	@Override
 	public String toString() {
-		// TODO
-		return null;
+		StringBuilder s = new StringBuilder();
+		s.append("At least ").append(creditsQuota).append(" credits from ( ");
+		for (DReqCourse req : reqs) {
+			s.append(req.toString()).append(", ");
+		}
+		s.replace(s.length() - ", ".length(), s.length(), " )");
+		return s.toString();
 	}
 
 

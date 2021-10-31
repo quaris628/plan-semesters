@@ -36,10 +36,10 @@ public class SemesterList implements Iterable<Semester> {
 				DEFAULT_ENABLED_FALL,
 				DEFAULT_ENABLED_WINTER };
 		// MAX and -1 are so .compareTo results work well for prereq checks
-		unplanned = new Semester(Integer.MAX_VALUE, null, null);
-		satisfied = new Semester(-1, null, null);
+		unplanned = new Semester(null, Integer.MAX_VALUE, null, null);
+		satisfied = new Semester(this, -1, null, null);
 		semesters = new LinkedList<Semester>();
-		semesters.add(new Semester(0, startingSeason, StudentYear.getStudentYear(startingCredits)));
+		semesters.add(new Semester(this, 0, startingSeason, StudentYear.getStudentYear(startingCredits)));
 	}
 	
 	// --------------------------------
@@ -48,12 +48,20 @@ public class SemesterList implements Iterable<Semester> {
 	
 	public void setStartingCredits(int startingCredits) {
 		this.startingCredits = startingCredits;
-		// refresh student year of all semesters
+		refreshYears();
+	}
+	
+	/**
+	 * update year status based on cumulative credits
+	 * @return total credits over all semesters
+	 */
+	public int refreshYears() {
 		int cumulativeCredits = startingCredits;
 		for (Semester semester : semesters) {
 			semester.setStudentYear(StudentYear.getStudentYear(cumulativeCredits));
 			cumulativeCredits += semester.getTotalCredits();
 		}
+		return cumulativeCredits;
 	}
 	
 	public int getStartingCredits() {
@@ -104,10 +112,9 @@ public class SemesterList implements Iterable<Semester> {
 		// This part is needlessly O(n^2), since linkedlist .add(index, item) is O(n) 
 		// TODO increase efficiency to O(n) with a manual linked list (iterate once over list)
 		for (int i = firstInsertIndex; i < semesters.size(); i+= numEnabledSeasons + 1) {
-			semesters.add(i, new Semester(i, seasonToEnable, null));
+			semesters.add(i, new Semester(this, i, seasonToEnable, null));
 		}
-		// refresh cumulative credits
-		this.setStartingCredits(this.getStartingCredits());
+		refreshYears();
 		
 		enabledSeasons[seasonToEnable.ordinal()] = true;
 	}
@@ -145,13 +152,23 @@ public class SemesterList implements Iterable<Semester> {
 		semesters.removeAll(semestersToRemove);
 		
 		// refresh cumulative credits (=> refresh student years)
-		this.setStartingCredits(this.getStartingCredits());
+		refreshYears();
 		
 		enabledSeasons[seasonToDisable.ordinal()] = false;
 	}
 	
 	public boolean isEnabled(Season season) {
 		return enabledSeasons[season.ordinal()];
+	}
+	
+	public int getNumEnabledSeasons() {
+		int numEnabled = 0;
+		for (int i = 0; i < enabledSeasons.length; i++) {
+			if (enabledSeasons[i]) {
+				numEnabled++;
+			}
+		}
+		return numEnabled;
 	}
 	
 	public Season getNextEnabledAfter(Season season) {
@@ -182,6 +199,10 @@ public class SemesterList implements Iterable<Semester> {
 		return satisfied;
 	}
 
+	public Semester getSemester(int i) {
+		return semesters.get(i);
+	}
+	
 	// Iterable interface
 	@Override
 	public Iterator<Semester> iterator() {
@@ -194,10 +215,27 @@ public class SemesterList implements Iterable<Semester> {
 	
 	public Semester getSemesterAfter(Semester semester) throws NoSuchElementException {
 		Iterator<Semester> iter = semesters.iterator();
+		int cumulativeCredits = 0;
 		while (iter.hasNext()) {
 			Semester s = iter.next();
+			cumulativeCredits += s.getTotalCredits();
 			if (s.equals(semester)) {
-				return iter.next();
+				if (iter.hasNext()) {
+					return iter.next();
+				} else {
+					// create new semester
+					int n = s.getN();
+					Season season = s.getSeason().getNext();
+					while (!enabledSeasons[season.ordinal()] ) {
+						season = season.getNext();
+						n++;
+					}
+					StudentYear year = StudentYear.getStudentYear(cumulativeCredits);
+					Semester newSemester = new Semester(this, n, season, year);
+					semesters.addLast(newSemester);
+					return newSemester;
+				}
+				
 			}
 		}
 		throw new NoSuchElementException(semester.toString() + " was not found");

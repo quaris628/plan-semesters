@@ -26,21 +26,39 @@ public class CoursesNotClearedException extends RuntimeException {
 		super("Cannot disable " + seasonToDisable.toString() + "because " + problemSemester.toString() + "still contains courses");
 	}
 	
+
+	/**
+	 * @param message
+	 */
 	public CoursesNotClearedException(String message) {
 		super(message);
 		// Auto-generated constructor stub
 	}
 
+
+	/**
+	 * @param cause
+	 */
 	public CoursesNotClearedException(Throwable cause) {
 		super(cause);
 		// Auto-generated constructor stub
 	}
 
+	/**
+	 * @param message
+	 * @param cause
+	 */
 	public CoursesNotClearedException(String message, Throwable cause) {
 		super(message, cause);
 		// Auto-generated constructor stub
 	}
 
+	/**
+	 * @param message
+	 * @param cause
+	 * @param enableSuppression
+	 * @param writableStackTrace
+	 */
 	public CoursesNotClearedException(String message, Throwable cause, boolean enableSuppression,
 			boolean writableStackTrace) {
 		super(message, cause, enableSuppression, writableStackTrace);

@@ -7,6 +7,7 @@ import semesters.Season;
 import semesters.Semester;
 import semesters.SemesterList;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -25,15 +26,13 @@ public class Plan {
 	public static final Season DEFAULT_STARTING_SEASON = Season.FALL;
 	
 	private ArrayList<Degree> degrees;
-	private SemesterList semesters;
-	private Map<Course, Semester> courses;
+	private SemesterList semesterList;
+	private Map<Course, Semester> coursesMap;
 	
 	public Plan() {
 		degrees = new ArrayList<Degree>();
-		semesters = new SemesterList(0, DEFAULT_STARTING_SEASON);
-		courses = new HashMap<Course, Semester>();
-		
-		
+		semesterList = new SemesterList(0, DEFAULT_STARTING_SEASON);
+		coursesMap = new HashMap<Course, Semester>();
 	}
 	
 	public void addDegree(Degree degree) {
@@ -42,80 +41,81 @@ public class Plan {
 			
 			// add all courses of that degree that weren't already there
 			for (Course course : degree.getAllCourses()) {
-				if (!courses.containsKey(course)) {
-					// TODO
-					//coursesTaking.put(course, SemesterList.UNPLANNED);
+				if (!coursesMap.containsKey(course)) {
+					semesterList.getUnplanned().addCourse(course);
+					coursesMap.put(course, semesterList.getUnplanned());
 				}
 			}
 		}
 	}
 	
-	// O(n)
 	public void removeDegree(Degree degreeToRemove) {
 		if (degrees.contains(degreeToRemove)) {
 			degrees.remove(degreeToRemove);
 			
 			// re-add courses of all other degrees
 			// can't just remove courses of removing degree, there may be overlap
-			Map<Course, Semester> newCoursesTaking = new HashMap<Course, Semester>();
+			Map<Course, Semester> newCoursesMap = new HashMap<Course, Semester>();
+			
+			// remove 
+			for (Course courseToRemove : degreeToRemove.getAllCourses()) {
+				coursesMap.get(courseToRemove).removeCourse(courseToRemove);
+			}
+			
 			for (Degree degreeToKeep : degrees) {
-				for (Course course : degreeToKeep.getAllCourses()) {
-					newCoursesTaking.put(course, courses.get(course));
+				for (Course courseToKeep : degreeToKeep.getAllCourses()) {
+					coursesMap.get(courseToKeep).addCourse(courseToKeep);
+					newCoursesMap.put(courseToKeep, coursesMap.get(courseToKeep));
 				}
 			}
-			courses = newCoursesTaking;
+			
+			coursesMap = newCoursesMap;
 		}
 	}
 	
+	public Degree[] getDegrees() {
+		return (Degree[])degrees.toArray(new Degree[degrees.size()]);
+	}
+	
+	public boolean hasDegree(Degree degree) {
+		return degrees.contains(degree);
+	}
+	
 	public void take(Course course, Semester semester) {
-		if (courses.containsKey(course)) {
-			courses.put(course, semester);
+		if (coursesMap.containsKey(course)) {
+			coursesMap.put(course, semester);
+			semester.addCourse(course);
 		} else {
 			throw new IllegalArgumentException("course does not exist in the plan");
 		}
 	}
 	
-	public Semester getSemesterOf(Course course) {
-		return courses.get(course);
+	public SemesterList getSemesters() {
+		return semesterList;
 	}
 	
-	public Course[] getCoursesOf(Semester semester) {
-		// TODO
-		return null;
+	public Semester getSemesterOf(Course course) {
+		return coursesMap.get(course);
 	}
 	
 	public Course[] getAllCourses() {
-		return (Course[])courses.keySet().toArray();
-	}
-	
-	public Semester getLastSemester() {
-		// TODO working on now?
-		return null;
-	}
-	
-	public int getNumSemesters() {
-		// TODO
-		return 0;
+		return (Course[])coursesMap.keySet().toArray();
 	}
 	
 	public void generateRecommendation() {
 		// TODO, big TODO
 	}
 	
-	public boolean isRecommendationReady() {
-		// TODO
-		return false;
-	}
-	
-	@Override
-	public boolean equals(Object o) {
-		// TODO
-		return false;
-	}
-	
 	@Override
 	public String toString() {
-		// TODO
-		return null;
+		StringBuilder s = new StringBuilder();
+		for (Semester semester : semesterList) {
+			s.append(semester.toString()).append(":\n");
+			for (Course course : semester.getCourses()) {
+				s.append('\t').append(course.toString()).append('\n');
+			}
+			s.append("\tCredits: ").append(semester.getTotalCredits()).append('\n');
+		}
+		return s.toString();
 	}
 }
