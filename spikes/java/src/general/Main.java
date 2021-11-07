@@ -1,13 +1,9 @@
 package general;
 
-import java.util.InputMismatchException;
 import java.util.Scanner;
 
 import catalog.Catalog;
-import course.CPreReq;
-import course.CReqAnd;
-import course.Course;
-import degree.*;
+import degree.Degree;
 
 /**
  * right now this is just for sandboxing
@@ -24,95 +20,61 @@ public class Main {
 		
 		Plan plan = new Plan();
 		
-		while (true) {
-			int mainChoice = runMenu("Welcome to the Courses Planner", new String[] {
-					"Plan My Courses",
-					"Edit Degrees",
-					"Exit"});
-			if (mainChoice == 0) { // Plan My Courses
-				while (true) {
-					int planChoice = runMenu("Plan My Courses", new String[] {
-							"Choose Degrees",
-							"Plan Course Enrollment",
-							"Edit Semester Settings",
-							"Back"});
-					if (planChoice == 0) { // Choose Degrees
-						while (true) {
-							System.out.println("Currently Selected Degrees:");
-							for (Degree degree : plan.getDegrees()) {
-								System.out.println("\t" + degree);
-							}
-							int degreeManageChoice = runMenu("Manage My Degree Selections", new String[] {
-									"Add a Degree",
-									"Remove a Degree",
-									"Back"});
-							if (degreeManageChoice == 0) {
-								System.out.println("Available Degrees:");
-								for (Degree degree : Catalog.getAllDegrees()) {
-									if (!plan.hasDegree(degree)) {
-										System.out.println("\t" + degree);
-									}
-								}
-								System.out.println("Enter the name of the degree:");
-								String degreeName = sc.nextLine();
-								Degree degreeToAdd = Catalog.getDegreeByName(degreeName);
-								if (degreeToAdd == null) {
-									System.out.println("No degree with the name '" + degreeName + "' was found");
-								} else {
-									plan.addDegree(degreeToAdd);
-									System.out.println(degreeToAdd.getName() + " Added");
-								}
-							} else if (degreeManageChoice == 1) {
-								System.out.println("Enter the name of the degree:");
-								String degreeName = sc.nextLine();
-								Degree degreeToRemove = Catalog.getDegreeByName(degreeName);
-								if (degreeToRemove == null) {
-									System.out.println("No degree with the name '" + degreeName + "' was found");
-								} else {
-									plan.removeDegree(degreeToRemove);
-									System.out.println(degreeToRemove.getName() + " Added");
-								}
-							} else {
-								break;
-							}
-						}
-					} else if (planChoice == 1) { // Plan Course Enrollment
-						
-					} else if (planChoice == 2) { // Edit Semester Settings
-						
-					} else { // Exit
-						break;
-					}
+		// TODO much later
+		CmdMenu degreeMgr = new CmdMenu.CmdMenuBuilder("Manage Degrees")
+				.withOption("TODO", () -> {})
+				.build();
+		
+		Runnable printSelectedDegrees = () -> {
+			System.out.println("\nSelected Degrees:");
+			for (Degree degree : plan.getDegrees()) {
+				System.out.println("  " + degree);
+			}
+		};
+		
+		Runnable addDegree = () -> {
+			CmdMenu.CmdMenuBuilder addDegreeBuilder = new CmdMenu.CmdMenuBuilder("Select a Degree to Add:");
+			for (Degree degree : Catalog.getAllDegrees()) {
+				if (!plan.hasDegree(degree)) {
+					addDegreeBuilder.withOption(degree.toString(), () -> {
+						plan.addDegree(degree);
+						System.out.println(degree.getName() + " Added");
+					} ); // is 'degree' variable scope right to make this work?
 				}
-			} else if (mainChoice == 1) { // Edit Degrees
-				System.out.println("Coming later");
-			} else { // Exit
-				break;
 			}
-		}
+			addDegreeBuilder.withNoRepeats().build().run();
+		};
+		
+		Runnable removeDegree = () -> {
+			CmdMenu.CmdMenuBuilder removeDegreeBuilder = new CmdMenu.CmdMenuBuilder("Select a Degree to Remove:");
+			for (Degree degree : plan.getDegrees()) {
+				removeDegreeBuilder.withOption(degree.toString(), () -> {
+						plan.removeDegree(degree);
+						System.out.println(degree.getName() + " Removed");
+					} ); // is 'degree' variable scope right to make this work?
+			}
+			removeDegreeBuilder.withNoRepeats().build().run();
+		};
+		
+		CmdMenu chooseDegrees = new CmdMenu.CmdMenuBuilder("Manage My Degree Selections")
+				.withOnEnter(printSelectedDegrees)
+				.withOption("Add a Degree", addDegree)
+				.withOption("Remove a Degree", removeDegree)
+				.build();
+		
+		CmdMenu planner = new CmdMenu.CmdMenuBuilder("Plan My Courses")
+				.withOption("Choose Degrees", chooseDegrees)
+				.withOption("Plan Courses", () -> {})
+				.withOption("Edit Semester Settings", () -> {})
+				.build();
+		
+		CmdMenu main = new CmdMenu.CmdMenuBuilder("Welcome to the Courses Planner")
+				.withExitPhrase("Exit")
+				.withOption("Courses Planner", planner)
+				.withOption("Manage Degrees", degreeMgr)
+				.build();
+		
+		main.run();
+		
 	}
-	
-	private static int runMenu(String message, String[] options) {
-		System.out.println();
-		System.out.println(message);
-		for (int i = 0; i < options.length; i++) {
-			System.out.println(" " + String.valueOf(i) + " - " + options[i]);
-		}
-		int choice = -1;
-		boolean choiceValid = false;
-		while (!choiceValid) {
-			try {
-				choice = sc.nextInt();
-				choiceValid = 0 <= choice && choice < options.length;
-			} catch (InputMismatchException e) {
-				choiceValid = false;
-			}
-			sc.nextLine();
-			if (!choiceValid) {
-				System.out.println("Enter a number corresponding to an element in the list above");
-			}
-		}
-		return choice;
-	}
-
 }
