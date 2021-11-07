@@ -4,16 +4,16 @@
 package course;
 
 import general.Plan;
+import semesters.Semester;
 
 /**
- * Complete 26 Oct
+ * Complete 7 Nov
  * @author Quaris
  *
  */
-public class CReqOr implements CourseReq {
+public class CReqOr extends CourseReq {
 
 	private CourseReq[] reqs;
-	private String comment;
 	
 	public CReqOr(CourseReq req1, CourseReq req2) {
 		this.reqs = new CourseReq[] { req1, req2 };
@@ -28,9 +28,9 @@ public class CReqOr implements CourseReq {
 	}
 	
 	@Override
-	public boolean isSatisfied(Plan plan, Course course) {
+	public boolean isSatisfied(Plan plan, Semester semesterOfReqFor) {
 		for (CourseReq req : reqs) {
-			if (req.isSatisfied(plan, course)) {
+			if (req.isSatisfied(plan, semesterOfReqFor)) {
 				return true;
 			}
 		}
@@ -38,13 +38,11 @@ public class CReqOr implements CourseReq {
 	}
 	
 	@Override
-	public void addComment(String comment) {
-		this.comment = comment;
-	}
-
-	@Override
-	public String getComment() {
-		return comment;
+	public void _setRequiredForCourse(Course reqFor) {
+		super._setRequiredForCourse(reqFor);
+		for (CourseReq req : reqs) {
+			req._setRequiredForCourse(reqFor);
+		}
 	}
 	
 	@Override

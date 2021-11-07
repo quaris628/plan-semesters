@@ -4,36 +4,26 @@
 package course;
 
 import general.Plan;
+import semesters.Semester;
 import semesters.StudentYear;
 
 /**
- * Complete 26 Oct
+ * Complete 7 Nov
  * @author Quaris
  *
  */
-public class CReqYear implements CourseReq {
+public class CReqYear extends CourseReq {
 
 	private StudentYear year;
-	private String comment;
 	
 	public CReqYear(StudentYear year) {
 		this.year = year;
 	}
 	
 	@Override
-	public boolean isSatisfied(Plan plan, Course course) {
-		StudentYear plannedYear = plan.getSemesterOf(course).getStudentYear();
+	public boolean isSatisfied(Plan plan, Semester semesterOfReqFor) {
+		StudentYear plannedYear = semesterOfReqFor.getStudentYear();
 		return plannedYear.compareTo(year) >= 0;
-	}
-	
-	@Override
-	public void addComment(String comment) {
-		this.comment = comment;
-	}
-
-	@Override
-	public String getComment() {
-		return comment;
 	}
 	
 	@Override

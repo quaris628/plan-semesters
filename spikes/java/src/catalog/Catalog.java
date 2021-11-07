@@ -14,6 +14,8 @@ import degree.Degree;
 import degree.DegreeReq;
 
 /**
+ * TODO, big TODO: replace this placeholder catalog with a dynamic catalog
+ *     whose departments, degrees, and courses can be managed by the user
  * @author Quaris
  *
  */

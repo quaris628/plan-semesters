@@ -135,7 +135,7 @@ public class CmdMenu implements Runnable {
 	     *     one option is chosen
 	     * @return
 	     */
-	    public CmdMenuBuilder withNoRepeats() {
+	    public CmdMenuBuilder withoutRepeats() {
 	    	this.noRepeats = true;
 	    	return this;
 	    }

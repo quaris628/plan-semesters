@@ -82,6 +82,13 @@ public class Plan {
 		return degrees.contains(degree);
 	}
 	
+	public boolean canTake(Course course, Semester semester) {
+		if (course.getReqs() == null) {
+			return true;
+		}
+		return course.getReqs().isSatisfied(INSTANCE, semester);
+	}
+	
 	public void take(Course course, Semester semester) {
 		if (coursesMap.containsKey(course)) {
 			coursesMap.get(course).removeCourse(course);
@@ -111,8 +118,16 @@ public class Plan {
 	@Override
 	public String toString() {
 		StringBuilder s = new StringBuilder();
-		s.append(semesterList.getSatisfied().toString()).append('\n');
+		s.append("Target Degrees:\n");
+		for (Degree d : degrees) {
+			s.append("  ").append(d.toString())
+			.append(d.getReqirements().isSatisfied(INSTANCE) ?
+					" (Planned to Satisfy)" : " (Not Satisfied)")
+			.append('\n');
+		}
+		s.append('\n');
 		s.append(semesterList.getUnplanned().toString()).append('\n');
+		s.append(semesterList.getSatisfied().toString()).append('\n');
 		for (Semester semester : semesterList) {
 			s.append(semester.toString()).append('\n');
 		}

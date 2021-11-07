@@ -12,8 +12,8 @@ public class Main {
 		
 		CmdMenu mainMenu = new CmdMenu.CmdMenuBuilder("Welcome to Plan-My-Semesters")
 				.withExitPhrase("Exit")
-				.withOption("Courses Planner", PlanMgr::run)
-				.withOption("Manage Degrees", DegreesMgr::run)
+				.withOption("My Semesters Planner", PlanMgr::run)
+				.withOption("Manage Degrees and their Requirements", DegreesMgr::run)
 				.build();
 		
 		mainMenu.run();

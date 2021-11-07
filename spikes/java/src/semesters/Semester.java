@@ -53,10 +53,16 @@ public class Semester implements Comparable<Semester> {
 	 */
 	public void addCourse(Course course) {
 		if (!courses.contains(course)) {
+			if (courses.isEmpty() && container != null
+					&& this != container.getUnplanned() 
+					&& this != container.getSatisfied()) {
+				container.getSemesterAfter(this);
+			}
 			courses.add(course);
 			totalCredits += course.getCredits();
 			if (container != null) {
 				container.refreshYears();
+				
 			}
 		}
 	}
@@ -106,7 +112,7 @@ public class Semester implements Comparable<Semester> {
 	@Override
 	public String toString() {
 		StringBuilder s = new StringBuilder();
-		s.append(this.getName()).append(":\n");
+		s.append(this.getName()).append("\n");
 		for (Course course : courses) {
 			s.append("  ").append(course.toString()).append('\n');
 		}

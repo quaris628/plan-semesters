@@ -238,7 +238,7 @@ public class SemesterList implements Iterable<Semester> {
 				
 			}
 		}
-		throw new NoSuchElementException(semester.toString() + " was not found");
+		throw new NoSuchElementException(semester.getName() + " was not found");
 	}
 	
 	// --------------------------------

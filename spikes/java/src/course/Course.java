@@ -47,6 +47,7 @@ public class Course implements Comparable<Course> {
 		this.credits = credits;
 		this.description = null;
 		this.reqs = reqs;
+		reqs._setRequiredForCourse(this);
 		this.comment = null;
 	}
 	
@@ -58,6 +59,7 @@ public class Course implements Comparable<Course> {
 		this.credits = credits;
 		this.description = description;
 		this.reqs = reqs;
+		reqs._setRequiredForCourse(this);
 		this.comment = null;
 	}
 	
@@ -102,7 +104,7 @@ public class Course implements Comparable<Course> {
 
 	@Override
 	public int compareTo(Course c) {
-		return this.getId().compareTo(c.getId());
+		return this.id.compareTo(c.id);
 	}
 	
 	@Override

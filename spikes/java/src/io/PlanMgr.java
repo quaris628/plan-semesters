@@ -27,18 +27,20 @@ public class PlanMgr {
 	// --------------------------------
 	
 	// Degree Choice menu, options to add or remove a degree
-	private static CmdMenu chooseDegrees = new CmdMenu.CmdMenuBuilder("Manage My Degree Selections")
-					.withOnEnter(PlanMgr::printSelectedDegrees)
-					.withOption("Add a Degree", PlanMgr::addDegree)
-					.withOption("Remove a Degree", PlanMgr::removeDegree)
-					.build();
-	
-	private static CmdMenu rootMenu = new CmdMenu.CmdMenuBuilder("Plan My Courses")
-			.withOption("Choose Degrees", chooseDegrees)
-			.withOption("Plan Semesters", PlanMgr::askCourseToPlan)
-			.withOption("Edit Semester Settings", () -> {})
+	private static CmdMenu chooseDegrees =
+			new CmdMenu.CmdMenuBuilder("Manage My Degree Selections")
+			.withOnEnter(PlanMgr::printSelectedDegrees)
+			.withOption("Add a Degree", PlanMgr::addDegree)
+			.withOption("Remove a Degree", PlanMgr::removeDegree)
 			.build();
 	
+	private static CmdMenu rootMenu =
+			new CmdMenu.CmdMenuBuilder("Edit Semester Plan")
+			.withOnEnter(PlanMgr::printPlan)
+			.withOption("Edit Degrees", chooseDegrees)
+			.withOption("Assign a Course to a Semester", PlanMgr::askCourseToPlan)
+			.withOption("Edit Semester Settings", () -> {})
+			.build();
 
 	public static void run() {
 		rootMenu.run();
@@ -51,32 +53,44 @@ public class PlanMgr {
 	
 	// Prompt user to choose a semester during which to plan the course they chose
 	private static void askSemesterOfCourse(Course course) {
-		CmdMenu.CmdMenuBuilder menuBuilder = new CmdMenu.CmdMenuBuilder("Select Semester to Move " + course.toString() + " to");
+		CmdMenu.CmdMenuBuilder menuBuilder = new CmdMenu.CmdMenuBuilder(
+				course.toString() + " is currently in " +
+				Plan.INSTANCE.getSemesterOf(course).getName()
+				+ "\nMove " + course.toString() + " to...")
+				.withOnEnter(PlanMgr::printPlan);
 		
-		Semester satisfied = Plan.INSTANCE.getSemesters().getSatisfied();
-		menuBuilder.withOption(satisfied.getName(), () -> { Plan.INSTANCE.take(course, satisfied); });
 		Semester unplanned = Plan.INSTANCE.getSemesters().getUnplanned();
-		menuBuilder.withOption(unplanned.getName(), () -> { Plan.INSTANCE.take(course, unplanned); });
+		menuBuilder.withOption(unplanned.getName(),
+				() -> { Plan.INSTANCE.take(course, unplanned); });
+		Semester satisfied = Plan.INSTANCE.getSemesters().getSatisfied();
+		menuBuilder.withOption(satisfied.getName(),
+				() -> { Plan.INSTANCE.take(course, satisfied); });
 		for (Semester semester : Plan.INSTANCE.getSemesters()) {
-			// TODO filter semester options based on validity of that course being taken
-			menuBuilder.withOption(semester.getName(), () -> { Plan.INSTANCE.take(course, semester); });
+			if (Plan.INSTANCE.canTake(course, semester)) {
+				menuBuilder.withOption(semester.getName(),
+						() -> { Plan.INSTANCE.take(course, semester); });
+			}
+			
 		}
 		
-		menuBuilder.withNoRepeats().build().run();
+		menuBuilder.withoutRepeats().build().run();
 	}
 	
 	// Prompt user to choose a course to plan a semester for
 	private static void askCourseToPlan() {
-		CmdMenu.CmdMenuBuilder menuBuilder = new CmdMenu.CmdMenuBuilder("Select a Course to assign to a Semester:")
-				.withOnEnter(() -> { System.out.println(Plan.INSTANCE.toString()); });
+		CmdMenu.CmdMenuBuilder menuBuilder = new CmdMenu.CmdMenuBuilder(
+				"Select a Course to assign to a different Semester:")
+				.withOnEnter(PlanMgr::printPlan);
 		
 		Course[] courses = Plan.INSTANCE.getAllCourses();
 		Arrays.sort(courses);
 		for (Course course : courses) {
-			menuBuilder.withOption(course.toString(), () -> { askSemesterOfCourse(course); });
+			menuBuilder.withOption(course.toString() + " ("
+					+ Plan.INSTANCE.getSemesterOf(course).getName() + ")",
+					() -> { askSemesterOfCourse(course); });
 		}
 		
-		menuBuilder.build().run();
+		menuBuilder.withoutRepeats().build().run();
 	}
 	
 	
@@ -89,10 +103,12 @@ public class PlanMgr {
 		for (Degree degree : Plan.INSTANCE.getDegrees()) {
 			System.out.println("  " + degree);
 		}
+		System.out.println();
 	}
 	
 	private static void addDegree() {
-		CmdMenu.CmdMenuBuilder addDegreeBuilder = new CmdMenu.CmdMenuBuilder("Select a Degree to Add:");
+		CmdMenu.CmdMenuBuilder addDegreeBuilder =
+				new CmdMenu.CmdMenuBuilder("Select a Degree to Add:");
 		for (Degree degree : Catalog.getAllDegrees()) {
 			if (!Plan.INSTANCE.hasDegree(degree)) {
 				addDegreeBuilder.withOption(degree.toString(), () -> {
@@ -101,11 +117,12 @@ public class PlanMgr {
 				} ); // is 'degree' variable scope right to make this work?
 			}
 		}
-		addDegreeBuilder.withNoRepeats().build().run();
+		addDegreeBuilder.withoutRepeats().build().run();
 	}
 	
 	private static void removeDegree() {
-		CmdMenu.CmdMenuBuilder removeDegreeBuilder = new CmdMenu.CmdMenuBuilder("Select a Degree to Remove:");
+		CmdMenu.CmdMenuBuilder removeDegreeBuilder =
+				new CmdMenu.CmdMenuBuilder("Select a Degree to Remove:");
 		
 		for (Degree degree : Plan.INSTANCE.getDegrees()) {
 			removeDegreeBuilder.withOption(degree.toString(), () -> {
@@ -114,7 +131,17 @@ public class PlanMgr {
 				} );
 		}
 		
-		removeDegreeBuilder.withNoRepeats().build().run();
+		removeDegreeBuilder.withoutRepeats().build().run();
+	}
+
+	// --------------------------------
+	//  Misc
+	// --------------------------------
+	
+	private static void printPlan() {
+		System.out.println("--------------------------------");
+		System.out.print(Plan.INSTANCE);
+		System.out.println("--------------------------------\n");
 	}
 	
 }

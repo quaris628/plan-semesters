@@ -7,39 +7,27 @@ import general.Plan;
 import semesters.Semester;
 
 /**
- * Complete, 26 Oct
+ * Complete 7 Nov
  * @author Quaris
  *
  */
-public class CCoReq implements CourseReq {
+public class CCoReq extends CourseReq {
 	
-	private Course course;
-	private String comment;
+	private Course coReqCourse;
 	
-	public CCoReq(Course course) {
-		this.course = course;
+	public CCoReq(Course coReqCourse) {
+		this.coReqCourse = coReqCourse;
 	}
 	
 	@Override
-	public boolean isSatisfied(Plan plan, Course course) {
-		Semester unlockedCourseSemester = plan.getSemesterOf(course);
-		Semester coReqSemester = plan.getSemesterOf(this.course);
-		return coReqSemester.compareTo(unlockedCourseSemester) <= 0;
-	}
-
-	@Override
-	public void addComment(String comment) {
-		this.comment = comment;
-	}
-
-	@Override
-	public String getComment() {
-		return comment;
+	public boolean isSatisfied(Plan plan, Semester semesterOfReqFor) {
+		Semester coReqSemester = plan.getSemesterOf(this.coReqCourse);
+		return coReqSemester.compareTo(semesterOfReqFor) <= 0;
 	}
 
 	@Override
 	public String toString() {
-		return "CoReq:" + course.toString();
+		return "CoReq:" + coReqCourse.toString();
 	}
 	
 }
