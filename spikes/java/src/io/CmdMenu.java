@@ -1,7 +1,7 @@
 /**
  * 
  */
-package general;
+package io;
 
 import java.util.InputMismatchException;
 import java.util.LinkedList;
@@ -32,7 +32,6 @@ public class CmdMenu implements Runnable {
 		this.onEnter = b.onEnter;
 		this.title = b.title;
 		this.exitPhrase = b.exitPhrase;
-		// check if this is the correct array conversion
 		this.optionTitles = b.optionTitles.toArray(new String[b.optionTitles.size()]);
 		this.options = b.options.toArray(new Runnable[b.options.size()]);
 		this.prompt = b.prompt;
@@ -43,7 +42,9 @@ public class CmdMenu implements Runnable {
 	@Override
 	public void run() {
 		do {
-			System.out.println("\n --------------------------------\n");
+			for (int i = 0; i < 50; i++) {
+				System.out.println();
+			}
 			onEnter.run();
 			printTitles();
 			System.out.print(prompt);

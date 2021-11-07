@@ -94,7 +94,7 @@ public class Semester implements Comparable<Semester> {
 		} else if (season == null) {
 			return "Unknown " + String.valueOf(n);
 		} else {
-			return season.toString() + " " + String.valueOf(n);
+			return season.toString() + " " + String.valueOf(n) + " - " + studentYear.toString();
 		}
 	}
 	

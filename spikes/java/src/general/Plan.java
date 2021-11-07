@@ -7,7 +7,6 @@ import semesters.Season;
 import semesters.Semester;
 import semesters.SemesterList;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -25,11 +24,13 @@ public class Plan {
 	
 	public static final Season DEFAULT_STARTING_SEASON = Season.FALL;
 	
+	public static final Plan INSTANCE = new Plan();
+	
 	private ArrayList<Degree> degrees;
 	private SemesterList semesterList;
 	private Map<Course, Semester> coursesMap;
 	
-	public Plan() {
+	private Plan() {
 		degrees = new ArrayList<Degree>();
 		semesterList = new SemesterList(0, DEFAULT_STARTING_SEASON);
 		coursesMap = new HashMap<Course, Semester>();
