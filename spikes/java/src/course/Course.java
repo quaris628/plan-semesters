@@ -8,7 +8,7 @@ package course;
  * @author Quaris
  *
  */
-public class Course {
+public class Course implements Comparable<Course> {
 	
 	private String id; // e.g. "CS1430"
 	private String dept; // e.g. "Computer Science"
@@ -99,10 +99,16 @@ public class Course {
 		if (!(o instanceof Course)) { return false; }
 		return this.id.equals(((Course)o).id);
 	}
+
+	@Override
+	public int compareTo(Course c) {
+		return this.getId().compareTo(c.getId());
+	}
 	
 	@Override
 	public String toString() {
 		return id;
 	}
+
 	
 }

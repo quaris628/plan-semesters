@@ -36,7 +36,7 @@ public class SemesterList implements Iterable<Semester> {
 				DEFAULT_ENABLED_FALL,
 				DEFAULT_ENABLED_WINTER };
 		// MAX and -1 are so .compareTo results work well for prereq checks
-		unplanned = new Semester(null, Integer.MAX_VALUE, null, null);
+		unplanned = new Semester(this, Integer.MAX_VALUE, null, null);
 		satisfied = new Semester(this, -1, null, null);
 		semesters = new LinkedList<Semester>();
 		semesters.add(new Semester(this, 0, startingSeason, StudentYear.getStudentYear(startingCredits)));

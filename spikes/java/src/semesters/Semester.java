@@ -86,13 +86,7 @@ public class Semester implements Comparable<Semester> {
 		return n;
 	}
 	
-	@Override
-	public int compareTo(Semester semester) {
-		return this.n - semester.n;
-	}
-	
-	@Override
-	public String toString() {
+	public String getName() {
 		if (this == container.getUnplanned()) {
 			return "Unplanned";
 		} else if (this == container.getSatisfied()) {
@@ -102,7 +96,22 @@ public class Semester implements Comparable<Semester> {
 		} else {
 			return season.toString() + " " + String.valueOf(n);
 		}
-		
+	}
+	
+	@Override
+	public int compareTo(Semester semester) {
+		return this.n - semester.n;
+	}
+	
+	@Override
+	public String toString() {
+		StringBuilder s = new StringBuilder();
+		s.append(this.getName()).append(":\n");
+		for (Course course : courses) {
+			s.append("  ").append(course.toString()).append('\n');
+		}
+		s.append("  Credits: ").append(this.getTotalCredits()).append('\n');
+		return s.toString();
 	}
 
 }

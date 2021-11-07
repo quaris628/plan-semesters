@@ -43,6 +43,7 @@ public class CmdMenu implements Runnable {
 	@Override
 	public void run() {
 		do {
+			System.out.println("\n --------------------------------\n");
 			onEnter.run();
 			printTitles();
 			System.out.print(prompt);
@@ -55,7 +56,6 @@ public class CmdMenu implements Runnable {
 	}
 	
 	private void printTitles() {
-		System.out.println();
 		System.out.println(title);
 		System.out.println(" 0 - " + exitPhrase);
 		for (int i = 0; i < optionTitles.length; i++) {

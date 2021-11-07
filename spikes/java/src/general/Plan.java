@@ -83,10 +83,11 @@ public class Plan {
 	
 	public void take(Course course, Semester semester) {
 		if (coursesMap.containsKey(course)) {
+			coursesMap.get(course).removeCourse(course);
 			coursesMap.put(course, semester);
 			semester.addCourse(course);
 		} else {
-			throw new IllegalArgumentException("course does not exist in the plan");
+			throw new IllegalArgumentException("Course " + course.getId() + " does not exist in the plan");
 		}
 	}
 	
@@ -99,7 +100,7 @@ public class Plan {
 	}
 	
 	public Course[] getAllCourses() {
-		return (Course[])coursesMap.keySet().toArray();
+		return coursesMap.keySet().toArray(new Course[coursesMap.keySet().size()]);
 	}
 	
 	public void generateRecommendation() {
@@ -109,12 +110,10 @@ public class Plan {
 	@Override
 	public String toString() {
 		StringBuilder s = new StringBuilder();
+		s.append(semesterList.getSatisfied().toString()).append('\n');
+		s.append(semesterList.getUnplanned().toString()).append('\n');
 		for (Semester semester : semesterList) {
-			s.append(semester.toString()).append(":\n");
-			for (Course course : semester.getCourses()) {
-				s.append('\t').append(course.toString()).append('\n');
-			}
-			s.append("\tCredits: ").append(semester.getTotalCredits()).append('\n');
+			s.append(semester.toString()).append('\n');
 		}
 		return s.toString();
 	}
