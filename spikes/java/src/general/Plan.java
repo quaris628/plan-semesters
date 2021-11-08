@@ -125,7 +125,7 @@ public class Plan {
 		for (Degree d : degrees) {
 			s.append("  ").append(d.toString())
 			.append(d.getReqirements().isSatisfied(INSTANCE) ?
-					" (Planned to Satisfy)" : " (Not Satisfied)")
+					" (Plan Satisfies)" : " (Not Satisfied)")
 			.append('\n');
 		}
 		s.append('\n');

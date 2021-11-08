@@ -98,9 +98,11 @@ public class PlanMgr {
 		autoAssign(Arrays.asList(unplannedCourses));
 	}
 	
+	// TODO move this to a method in Plan
 	private static void autoAssign(Iterable<Course> courses) {
 		SemesterList allSemesters = Plan.INSTANCE.getSemesters();
 		boolean lastIterationHasChange = false;
+		boolean isFirstIteration = true;
 		while (!lastIterationHasChange) {
 			for (Course course : courses) {
 				for (Semester semester : allSemesters) {
@@ -111,6 +113,10 @@ public class PlanMgr {
 					}
 					
 				}
+			}
+			if (isFirstIteration && !lastIterationHasChange) {
+				isFirstIteration = false;
+				break;
 			}
 		}
 		// TODO make auto-assignment take into account 18-credit max each semester
