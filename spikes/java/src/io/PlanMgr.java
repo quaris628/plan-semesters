@@ -4,8 +4,6 @@
 package io;
 
 import java.util.Arrays;
-import java.util.Iterator;
-import java.util.LinkedList;
 
 import catalog.Catalog;
 import course.Course;
