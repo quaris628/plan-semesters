@@ -8,6 +8,7 @@ import semesters.Semester;
 import semesters.SemesterList;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -108,7 +109,9 @@ public class Plan {
 	}
 	
 	public Course[] getAllCourses() {
-		return coursesMap.keySet().toArray(new Course[coursesMap.keySet().size()]);
+		Course[] arr = coursesMap.keySet().toArray(new Course[coursesMap.keySet().size()]);
+		Arrays.sort(arr);
+		return arr;
 	}
 	
 	public void generateRecommendation() {

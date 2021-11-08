@@ -3,6 +3,7 @@
  */
 package semesters;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 
 import course.Course;
@@ -81,7 +82,9 @@ public class Semester implements Comparable<Semester> {
 	
 	public Course[] getCourses() {
 		// deep copy
-		return (Course[])courses.toArray(new Course[courses.size()]);
+		Course[] courseArr = courses.toArray(new Course[courses.size()]);
+		Arrays.sort(courseArr);
+		return courseArr;
 	}
 	
 	public int getTotalCredits() {

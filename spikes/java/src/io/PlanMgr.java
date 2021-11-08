@@ -4,12 +4,15 @@
 package io;
 
 import java.util.Arrays;
+import java.util.Iterator;
+import java.util.LinkedList;
 
 import catalog.Catalog;
 import course.Course;
 import degree.Degree;
 import general.Plan;
 import semesters.Semester;
+import semesters.SemesterList;
 
 /**
  * I/O related to managing the user's plan of semesters
@@ -37,8 +40,9 @@ public class PlanMgr {
 	private static CmdMenu rootMenu =
 			new CmdMenu.CmdMenuBuilder("Edit Semester Plan")
 			.withOnEnter(PlanMgr::printPlan)
-			.withOption("Edit Degrees", chooseDegrees)
-			.withOption("Assign a Course to a Semester", PlanMgr::askCourseToPlan)
+			.withOption("Choose Degrees", chooseDegrees)
+			.withOption("Auto-Assign Unplanned Courses to Semesters", PlanMgr::autoAssignUnplannedCourses)
+			.withOption("Manually Assign a Course to a Semester", PlanMgr::askCourseToPlan)
 			.withOption("Edit Semester Settings", () -> {})
 			.build();
 
@@ -82,15 +86,36 @@ public class PlanMgr {
 				"Select a Course to assign to a different Semester:")
 				.withOnEnter(PlanMgr::printPlan);
 		
-		Course[] courses = Plan.INSTANCE.getAllCourses();
-		Arrays.sort(courses);
-		for (Course course : courses) {
+		for (Course course : Plan.INSTANCE.getAllCourses()) {
 			menuBuilder.withOption(course.toString() + " ("
 					+ Plan.INSTANCE.getSemesterOf(course).getName() + ")",
 					() -> { askSemesterOfCourse(course); });
 		}
 		
 		menuBuilder.withoutRepeats().build().run();
+	}
+	
+	private static void autoAssignUnplannedCourses() {
+		Course[] unplannedCourses = Plan.INSTANCE.getSemesters().getUnplanned().getCourses();
+		autoAssign(Arrays.asList(unplannedCourses));
+	}
+	
+	private static void autoAssign(Iterable<Course> courses) {
+		SemesterList allSemesters = Plan.INSTANCE.getSemesters();
+		boolean lastIterationHasChange = false;
+		while (!lastIterationHasChange) {
+			for (Course course : courses) {
+				for (Semester semester : allSemesters) {
+					if (Plan.INSTANCE.canTake(course, semester)) {
+						Plan.INSTANCE.take(course, semester);
+						lastIterationHasChange = true;
+						break;
+					}
+					
+				}
+			}
+		}
+		// TODO make auto-assignment take into account 18-credit max each semester
 	}
 	
 	
@@ -114,7 +139,7 @@ public class PlanMgr {
 				addDegreeBuilder.withOption(degree.toString(), () -> {
 					Plan.INSTANCE.addDegree(degree);
 					System.out.println("Added " + degree.getName());
-				} ); // is 'degree' variable scope right to make this work?
+				} );
 			}
 		}
 		addDegreeBuilder.withoutRepeats().build().run();
