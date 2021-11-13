@@ -26,7 +26,7 @@ public class DReqCourse implements DegreeReq {
 	
 	@Override
 	public boolean isSatisfied(Plan plan) {
-		return plan.getSemesterOf(course) != plan.getSemesters().getUnplanned();
+		return !plan.isUnassigned(course);
 	}
 
 	@Override

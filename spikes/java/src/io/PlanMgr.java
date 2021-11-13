@@ -4,13 +4,14 @@
 package io;
 
 import java.util.Arrays;
+import java.util.Iterator;
 
 import catalog.Catalog;
 import course.Course;
 import degree.Degree;
 import general.Plan;
 import semesters.Semester;
-import semesters.SemesterList;
+import semesters.SemesterListDepracated;
 
 /**
  * I/O related to managing the user's plan of semesters
@@ -56,25 +57,20 @@ public class PlanMgr {
 	// Prompt user to choose a semester during which to plan the course they chose
 	private static void askSemesterOfCourse(Course course) {
 		CmdMenu.CmdMenuBuilder menuBuilder = new CmdMenu.CmdMenuBuilder(
-				course.toString() + " is currently in " +
-				Plan.INSTANCE.getSemesterOf(course).getName()
-				+ "\nMove " + course.toString() + " to...")
-				.withOnEnter(PlanMgr::printPlan);
+				course.toString() + " is currently in "
+				+ Main.PLAN.getSemesterOf(course).getName() + "\nMove to...")
+				.withOnEnter(PlanMgr::printPlan)
+				.withOption("Unassign", () -> { Main.PLAN.unassign(course); })
+				.withOption("Satisfied", () -> { Main.PLAN.assignSatisfied(course); });
 		
-		Semester unplanned = Plan.INSTANCE.getSemesters().getUnplanned();
-		menuBuilder.withOption(unplanned.getName(),
-				() -> { Plan.INSTANCE.take(course, unplanned); });
-		Semester satisfied = Plan.INSTANCE.getSemesters().getSatisfied();
-		menuBuilder.withOption(satisfied.getName(),
-				() -> { Plan.INSTANCE.take(course, satisfied); });
-		for (Semester semester : Plan.INSTANCE.getSemesters()) {
-			if (Plan.INSTANCE.canTake(course, semester)) {
+		Iterator<Semester> iter = Main.PLAN.getSemesters();
+		while (iter.hasNext()) {
+			Semester semester = iter.next();
+			if (Main.PLAN.canAssign(course, semester)) {
 				menuBuilder.withOption(semester.getName(),
-						() -> { Plan.INSTANCE.take(course, semester); });
+						() -> { Main.PLAN.assign(course, semester); });
 			}
-			
 		}
-		
 		menuBuilder.withoutRepeats().build().run();
 	}
 	
@@ -84,30 +80,31 @@ public class PlanMgr {
 				"Select a Course to assign to a different Semester:")
 				.withOnEnter(PlanMgr::printPlan);
 		
-		for (Course course : Plan.INSTANCE.getAllCourses()) {
+		Iterator<Course> iter = Main.PLAN.getAllUniqueCourses();
+		while (iter.hasNext()) {
+			Course course = iter.next();
 			menuBuilder.withOption(course.toString() + " ("
-					+ Plan.INSTANCE.getSemesterOf(course).getName() + ")",
+					+ Main.PLAN.getSemesterOf(course).getName() + ")",
 					() -> { askSemesterOfCourse(course); });
 		}
-		
 		menuBuilder.withoutRepeats().build().run();
 	}
 	
 	private static void autoAssignUnplannedCourses() {
-		Course[] unplannedCourses = Plan.INSTANCE.getSemesters().getUnplanned().getCourses();
+		Course[] unplannedCourses = Main.PLAN.getSemesters().getUnplanned().getCourses();
 		autoAssign(Arrays.asList(unplannedCourses));
 	}
 	
 	// TODO move this to a method in Plan
 	private static void autoAssign(Iterable<Course> courses) {
-		SemesterList allSemesters = Plan.INSTANCE.getSemesters();
+		SemesterListDepracated allSemesters = Main.PLAN.getSemesters();
 		boolean lastIterationHasChange = false;
 		boolean isFirstIteration = true;
 		while (!lastIterationHasChange) {
 			for (Course course : courses) {
 				for (Semester semester : allSemesters) {
-					if (Plan.INSTANCE.canTake(course, semester)) {
-						Plan.INSTANCE.take(course, semester);
+					if (Main.PLAN.canAssign(course, semester)) {
+						Main.PLAN.assign(course, semester);
 						lastIterationHasChange = true;
 						break;
 					}
@@ -129,7 +126,7 @@ public class PlanMgr {
 	
 	private static void printSelectedDegrees() {
 		System.out.println("\nSelected Degrees:");
-		for (Degree degree : Plan.INSTANCE.getDegrees()) {
+		for (Degree degree : Main.PLAN.getDegrees()) {
 			System.out.println("  " + degree);
 		}
 		System.out.println();
@@ -139,9 +136,9 @@ public class PlanMgr {
 		CmdMenu.CmdMenuBuilder addDegreeBuilder =
 				new CmdMenu.CmdMenuBuilder("Select a Degree to Add:");
 		for (Degree degree : Catalog.getAllDegrees()) {
-			if (!Plan.INSTANCE.hasDegree(degree)) {
+			if (!Main.PLAN.hasDegree(degree)) {
 				addDegreeBuilder.withOption(degree.toString(), () -> {
-					Plan.INSTANCE.addDegree(degree);
+					Main.PLAN.addDegree(degree);
 					System.out.println("Added " + degree.getName());
 				} );
 			}
@@ -153,9 +150,9 @@ public class PlanMgr {
 		CmdMenu.CmdMenuBuilder removeDegreeBuilder =
 				new CmdMenu.CmdMenuBuilder("Select a Degree to Remove:");
 		
-		for (Degree degree : Plan.INSTANCE.getDegrees()) {
+		for (Degree degree : Main.PLAN.getDegrees()) {
 			removeDegreeBuilder.withOption(degree.toString(), () -> {
-					Plan.INSTANCE.removeDegree(degree);
+					Main.PLAN.removeDegree(degree);
 					System.out.println("Removed " + degree.getName());
 				} );
 		}
@@ -169,7 +166,7 @@ public class PlanMgr {
 	
 	private static void printPlan() {
 		System.out.println("--------------------------------");
-		System.out.print(Plan.INSTANCE);
+		System.out.print(Main.PLAN);
 		System.out.println("--------------------------------\n");
 	}
 	

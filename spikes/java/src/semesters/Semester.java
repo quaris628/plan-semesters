@@ -3,8 +3,9 @@
  */
 package semesters;
 
-import java.util.Arrays;
+import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 
 import course.Course;
 
@@ -13,18 +14,27 @@ import course.Course;
  * @author Quaris
  *
  */
-public class Semester implements Comparable<Semester> {
+public class Semester implements Comparable<Semester>, Iterable<Course> {
 
 	private int year;
 	private Season season;
-	private StudentYear studentYear;
-	private CourseList courses;
+	private int priorCumCredits;
+	private int totalCredits;
+	private final List<Course> courses;
 	
-	public Semester(int year, Season season, StudentYear studentYear) {
+	/**
+	 * Creates a new semester 
+	 * @param year, such as 2000
+	 * @param season
+	 * @param studentYear
+	 * @param priorCumCredits, cumulative credits planned to earn prior to this semester
+	 */
+	public Semester(int year, Season season, int priorCumCredits) {
 		this.year = year;
 		this.season = season;
-		this.studentYear = studentYear;
-		this.courses = new CourseList();
+		this.priorCumCredits = priorCumCredits;
+		this.totalCredits = 0;
+		this.courses = new LinkedList<Course>();
 	}
 
 	public int getYear() {
@@ -32,6 +42,9 @@ public class Semester implements Comparable<Semester> {
 	}
 	
 	public void setYear(int year) {
+		if (year < 0) {
+			throw new IllegalArgumentException("Invalid Year " + String.valueOf(year));
+		}
 		this.year = year;
 	}
 	
@@ -40,32 +53,80 @@ public class Semester implements Comparable<Semester> {
 	}
 	
 	public void setSeason(Season season) {
+		if (season == null) {
+			throw new IllegalArgumentException("season cannot be null");
+		}
 		this.season = season;
 	}
-
+	
+	/**
+	 * @return prior cumulative credits, not including credits this semester
+	 */
+	public int getPriorCumulativeCredits() {
+		return priorCumCredits;
+	}
+	
+	public void setPriorCumulativeCredits(int priorCumCredits) {
+		this.priorCumCredits = priorCumCredits;
+	}
+	
 	public StudentYear getStudentYear() {
-		return studentYear;
+		return StudentYear.getStudentYear(priorCumCredits);
 	}
 	
-	public void setStudentYear(StudentYear studentYear) {
-		this.studentYear = studentYear;
+	public int getTotalCredits() {
+        return totalCredits;
 	}
 	
-	public CourseList getCourses() {
-		return courses;
+	/**
+	 * @return total cumulative credits, including credits this semester
+	 */
+	public int getTotalCumulativeCredits() {
+		return priorCumCredits + totalCredits;
 	}
 	
-	public String getName() {
-		StringBuilder s = new StringBuilder();
-		s.append(year > 0 ? year : "-").append(" ");
-		s.append(season != null ? season : "-").append(", ");
-		s.append(studentYear != null ? studentYear : "-");
-		return s.toString();
+	public void add(Course course) {
+		if (course == null) {
+			throw new IllegalArgumentException("Cannot add a null course");
+		}
+		if (!courses.contains(course)) {
+			courses.add(course);
+			totalCredits += course.getCredits();
+		}
+	}
+	
+	public void remove(Object course) {
+		if (course == null) {
+			throw new IllegalArgumentException("Cannot remove a null course");
+		}
+		if (!(course instanceof Course)) {
+			throw new IllegalArgumentException("Cannot remove non-courses");
+		}
+		Course courseToRemove = (Course)course;
+		if (courses.contains(courseToRemove)) {
+			courses.remove(courseToRemove);
+			totalCredits -= courseToRemove.getCredits();
+		}
+	}
+	
+	public void clearCourses() {
+		courses.clear();
+	}
+	
+	public Iterator<Course> iterator() {
+		return courses.iterator();
 	}
 	
 	@Override
 	public int compareTo(Semester semester) {
 		return this.year * 4 + this.season.ordinal() - (semester.year * 4 + semester.season.ordinal());
+	}
+	
+	public String getName() {
+		StringBuilder s = new StringBuilder();
+		s.append(season != null ? season : "-").append(" ");
+		s.append(year > 0 ? year : "-");
+		return s.toString();
 	}
 	
 	@Override
@@ -75,7 +136,7 @@ public class Semester implements Comparable<Semester> {
 		for (Course course : courses) {
 			s.append("  ").append(course.toString()).append('\n');
 		}
-		s.append("  Credits: ").append(this.courses.getTotalCredits()).append('\n');
+		s.append("  Credits: ").append(totalCredits).append('\n');
 		return s.toString();
 	}
 

@@ -15,26 +15,13 @@ import exceptions.OneSeasonEnabledException;
  * @author Quaris
  *
  */
-public class SemesterList implements Iterable<Semester> {
+public class SemesterListDepracated implements Iterable<Semester> {
 	
-	public static final boolean DEFAULT_ENABLED_SPRING = true;
-	public static final boolean DEFAULT_ENABLED_SUMMER = false;
-	public static final boolean DEFAULT_ENABLED_FALL = true;
-	public static final boolean DEFAULT_ENABLED_WINTER = false;
-	
-	private int startingCredits;
-	private boolean[] enabledSeasons;
 	private Semester unplanned;
 	private Semester satisfied;
 	private LinkedList<Semester> semesters;
 	
-	public SemesterList(int startingCredits, Season startingSeason) {
-		this.startingCredits = startingCredits;
-		enabledSeasons = new boolean[] {
-				DEFAULT_ENABLED_SPRING,
-				DEFAULT_ENABLED_SUMMER,
-				DEFAULT_ENABLED_FALL,
-				DEFAULT_ENABLED_WINTER };
+	public SemesterListDepracated(int startingCredits, Season startingSeason) {
 		// MAX and -1 are so .compareTo results work well for prereq checks
 		unplanned = new Semester(this, Integer.MAX_VALUE, null, null);
 		satisfied = new Semester(this, -1, null, null);
@@ -45,11 +32,6 @@ public class SemesterList implements Iterable<Semester> {
 	// --------------------------------
 	//  set/get initial conditions
 	// --------------------------------
-	
-	public void setStartingCredits(int startingCredits) {
-		this.startingCredits = startingCredits;
-		refreshYears();
-	}
 	
 	/**
 	 * update year status based on cumulative credits
@@ -64,10 +46,6 @@ public class SemesterList implements Iterable<Semester> {
 		return cumulativeCredits;
 	}
 	
-	public int getStartingCredits() {
-		return startingCredits;
-	}
-
 	public void setStartingSeason(Season season) {
 		Season seasonToSet = season;
 		// refresh season of all semesters
@@ -76,11 +54,6 @@ public class SemesterList implements Iterable<Semester> {
 			seasonToSet = this.getNextEnabledAfter(seasonToSet);
 		}
 	}
-	
-	public Season getStartingSeason() {
-		return semesters.getFirst().getSeason();
-	}
-
 
 	// --------------------------------
 	//  manage Seasons
@@ -171,22 +144,6 @@ public class SemesterList implements Iterable<Semester> {
 		return numEnabled;
 	}
 	
-	public Season getNextEnabledAfter(Season season) {
-		Season toReturn = season.getNext();
-		while (!enabledSeasons[toReturn.ordinal()] ) {
-			toReturn = toReturn.getNext();
-		}
-		return toReturn;
-	}
-	
-	public Season getNextEnabledBefore(Season season) {
-		Season toReturn = season.getPrev();
-		while (!enabledSeasons[toReturn.ordinal()] ) {
-			toReturn = toReturn.getPrev();
-		}
-		return toReturn;
-	}
-
 	// --------------------------------
 	//  get Semesters
 	// --------------------------------

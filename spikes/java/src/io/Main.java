@@ -1,5 +1,7 @@
 package io;
 
+import general.Plan;
+
 /**
  * Command Line stuff that lets me use the system
  * 
@@ -7,6 +9,8 @@ package io;
  *
  */
 public class Main {
+	
+	public static final Plan PLAN = new Plan();
 	
 	public static void main(String[] args) {
 		
