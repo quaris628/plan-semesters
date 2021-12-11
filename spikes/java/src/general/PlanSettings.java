@@ -3,7 +3,6 @@ package general;
 import java.time.Year;
 import java.util.List;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.LinkedList;
 
 import semesters.Season;
@@ -185,8 +184,8 @@ public class PlanSettings extends ChangeFlaggable implements Cloneable {
 		}
 	}
 	
-	public Iterator<Degree> getDegrees() {
-		return degrees.iterator();
+	public Iterable<Degree> getDegrees() {
+		return degrees;
 	}
 	
 	public boolean containsDegree(Degree degree) {

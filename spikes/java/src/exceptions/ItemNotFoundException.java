@@ -9,11 +9,9 @@ package exceptions;
  */
 public class ItemNotFoundException extends RuntimeException {
 
-	public static final String DEFAULT_MESSAGE = "Item was not found in the collection";
+	public static final String DEFAULT_MESSAGE =
+			"Item was not found in the collection";
 	
-	/**
-	 * Auto-generated from an eclipse suggestion. idk what it is.
-	 */
 	private static final long serialVersionUID = -4588462940924950776L;
 
 	/**

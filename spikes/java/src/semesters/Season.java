@@ -8,18 +8,18 @@ package semesters;
  *
  */
 public enum Season {
+	WINTER,
 	SPRING,
 	SUMMER,
-	FALL,
-	WINTER;
+	FALL;
 	
 	public Season getNext() {
-		if (this == WINTER) { return SPRING; }
+		if (this == FALL) { return WINTER; }
 		return Season.values()[this.ordinal() + 1];
 	}
 	
 	public Season getPrev() {
-		if (this == SPRING) { return WINTER; }
+		if (this == WINTER) { return FALL; }
 		return Season.values()[this.ordinal() - 1];
 	}
 }

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -14,7 +15,9 @@ import java.util.HashSet;
 
 import course.Course;
 import degree.Degree;
+import semesters.Season;
 import semesters.Semester;
+import utils.Args;
 
 /**
  * 
@@ -24,6 +27,9 @@ import semesters.Semester;
  */
 public class Plan {
 	
+	private static final String UNASSIGNED_NAME = "Unassigned";
+	private static final String SATISFIED_NAME = "Satisfied";
+	
 	private List<Semester> semesters;
 	private Set<Course> courses; // should be sorted by id
 	private Set<Course> unassignedCourses;
@@ -31,6 +37,7 @@ public class Plan {
 	// map is maintained only for performance of query methods
 	private Map<Course, Semester> coursesInSemesters;
 	private PlanSettings settings;
+	private PlanSettings settingsAtLastUpdate;
 	
 	public Plan() {
 		semesters = new ArrayList<Semester>();
@@ -39,7 +46,18 @@ public class Plan {
 		satisfiedCourses = new HashSet<Course>();
 		coursesInSemesters = new HashMap<Course, Semester>();
 		settings = new PlanSettings();
+		settingsAtLastUpdate = null;
+		semesters.add(new Semester(settings.getStartingYear(),
+				settings.getStartingSeason(),
+				settings.getStartingCredits()));
+		
+		applySettings();
 	}
+	
+	
+	// --------------------------------
+	//  Assignment methods
+	// --------------------------------
 	
 	/**
 	 * Tests whether a course can validly be assigned to a semester
@@ -66,6 +84,10 @@ public class Plan {
 		checkArgument(course);
 		checkArgument(semester);
 		
+		// TODO this has some problem unassigning a course from another semester
+		// it is already in. Came up when assigning to a semester later than
+		// the current semester.
+		
 		if (coursesInSemesters.containsKey(course)) {
 			Semester oldSemester = coursesInSemesters.get(course);
 			if (oldSemester == semester) {
@@ -79,6 +101,11 @@ public class Plan {
 		
 		semester.add(course);
 		coursesInSemesters.put(course, semester);
+		
+		// if adding to last semester in the list, expand semester list
+		if (semesters.get(semesters.size() - 1) == semester) {
+			semesters.add(getSemesterAfter(semester));
+		}
 	}
 	
 	/**
@@ -134,9 +161,45 @@ public class Plan {
 		satisfiedCourses.clear();
 	}
 	
-	public void autoAssign() {
-		// TODO move from PlanMgr.java
+	// overload of autoAssign(Course[])
+	public void autoAssign(Iterable<Course> coursesToAssign) {
+		// copy to linkedlist
+		LinkedList<Course> coursesList = new LinkedList<Course>();
+		for (Course course : coursesToAssign) {
+			coursesList.addLast(course);
+		}
+		
+		// copy to array
+		Course[] coursesArr = coursesList.toArray(new Course[coursesList.size()]);;
+		
+		autoAssign(coursesArr);
 	}
+	
+	public void autoAssign(Course[] coursesToAssign) {
+		boolean lastIterationHasChange = true;
+		while (lastIterationHasChange) {
+			lastIterationHasChange = false;
+			// must do i-counting instead of for-each because modification
+			// of the semesters data structure happens during loops
+			for (int i = 0; i < coursesToAssign.length; i++) {
+				for (int j = 0; j < semesters.size(); j++) {
+					Semester semester = semesters.get(j);
+					if (canAssign(coursesToAssign[i], semester)) {
+						if (this.getSemesterOf(coursesToAssign[i]) != semester) {
+							assign(coursesToAssign[i], semester);
+							lastIterationHasChange = true;
+						}
+						break;
+					}
+				}
+			}
+		}
+	}
+	
+	
+	// --------------------------------
+	//  Getters, etc queries
+	// --------------------------------
 	
 	/**
 	 * Checks whether the course is unassigned in the plan
@@ -156,6 +219,22 @@ public class Plan {
 	public boolean isSatisfied(Course course) {
 		checkArgument(course);
 		return satisfiedCourses.contains(course);
+	}
+	
+	/**
+	 * Gets iterable over all unassigned courses
+	 * @return Iterable<Course> of all unassigned courses
+	 */
+	public Iterable<Course> getUnassigned() {
+		return unassignedCourses;
+	}
+	
+	/**
+	 * Gets iterable over all satisfied courses
+	 * @return Iterable<Course> of all satisfied courses
+	 */
+	public Iterable<Course> getSatisfied() {
+		return satisfiedCourses;
 	}
 	
 	/**
@@ -191,10 +270,20 @@ public class Plan {
 		return coursesInSemesters.get(course);
 	}
 	
+	public String getAssignmentNameOf(Course course) {
+		if (isUnassigned(course)) {
+			return UNASSIGNED_NAME;
+		} else if (isSatisfied(course)) {
+			return SATISFIED_NAME;
+		} else {
+			return getSemesterOf(course).getName();
+		}
+		
+	}
+	
 	private void checkArgument(Course course) {
-		if (course == null) {
-			throw new IllegalArgumentException("course cannot be null");
-		} if (!(unassignedCourses.contains(course)
+		Args.checkNull(course, "course");
+		if (!(unassignedCourses.contains(course)
 				|| satisfiedCourses.contains(course)
 				|| coursesInSemesters.containsKey(course))) {
 			throw new IllegalArgumentException("plan does not contain " + course.toString());
@@ -202,9 +291,8 @@ public class Plan {
 	}
 	
 	private void checkArgument(Semester semester) {
-		if (semester == null) {
-			throw new IllegalArgumentException("semester cannot be null");
-		} if (!semesters.contains(semester)) {
+		Args.checkNull(semester, "semester");
+		if (!semesters.contains(semester)) {
 			throw new IllegalArgumentException("plan does not contain " + semester.toString());
 		}
 	}
@@ -213,54 +301,114 @@ public class Plan {
 	 * Gets iterator over all semesters contained in this plan
 	 * @return iterator over semesters
 	 */
-	public Iterator<Semester> getSemesters() {
-		return semesters.iterator();
+	public Iterable<Semester> getSemesters() {
+		return semesters;
 	}
 	
 	/**
-	 * Gets iterator over all courses contained in this plan
-	 * @return iterator over courses
+	 * Gets iterable over all courses (including unassigned and satisfied) contained in this plan
+	 * @return Iterable<Course> over all courses
 	 */
-	public Iterator<Course> getAllUniqueCourses() {
-		return courses.iterator();
+	public Iterable<Course> getAllUniqueCourses() {
+		return courses;
+	}
+	
+	
+	// --------------------------------
+	//  Plan Settings
+	// --------------------------------
+	
+	public PlanSettings getSettings() {
+		return settings;
 	}
 	
 	public void applySettings() {
-		if (settings.hasChanged()) {
-			// TODO
-			// throw exceptions if things go wrong
+		if (settings.hasChanged() && !settings.equals(settingsAtLastUpdate)) {
+			// important to update enabled seasons before
+			//     updating years and cumulative credits
+			updateEnabledSeasons();
+			updateStartingSeason();
+			updateYears();
+			updateCumulativeCredits();
 			updateDegrees();
-			
+			settingsAtLastUpdate = settings.clone();
 			settings.resetChangeFlag();
 		}
 	}
-
-	private void updateStartingSeason() {
-		// TODO
-	}
 	
 	private void updateEnabledSeasons() {
-		// TODO
+		// TODO increase efficiency? (with manual linked list? or hash something?)
+		
+		// remove semesters with recently disabled seasons
+		for (int i = 0; i < semesters.size(); i++) {
+			Semester semester = semesters.get(i);
+			if (!settings.isEnabled(semester.getSeason())) {
+				// unassign any courses in this semester
+				for (Course course : semester.getCourses()) {
+					unassign(course);
+				}
+				semesters.remove(i);
+			}
+		}
+		
+		// add semesters with recently enabled seasons
+		Season season = settings.getStartingSeason();
+		for (int i = 0; i < semesters.size(); i++) {
+			
+			// while this semester's season comes after the intended season
+			while (season.ordinal() - semesters.get(i).getSeason().ordinal() < 0) {
+				// insert a new semester, with the recently enabled season
+				Semester newSemester = getSemesterBefore(semesters.get(i));
+				semesters.add(i, newSemester);
+			}
+			season = settings.getNearestEnabledAfter(season);
+		}
+		
+	}
+	
+	private void updateStartingSeason() {
+		while (semesters.get(0).getSeason() != settings.getStartingSeason()) {
+			// insert new semester at front of list
+			Semester newSemester = getSemesterBefore(semesters.get(0));
+			semesters.add(0, newSemester);
+		}
 	}
 	
 	private void updateYears() {
-		// TODO
+		int year = settings.getStartingYear();
+		for (Semester semester : semesters) {
+			// if previous semester is in a different year
+			if (semester.getSeason().ordinal() <=
+					settings.getNearestEnabledBefore(semester.getSeason()).ordinal()) {
+				year++;
+			}
+			
+			semester.setYear(year);
+		}
 	}
 	
 	private void updateCumulativeCredits() {
-		// TODO
+		int cumCredits = settings.getStartingCredits();
+		// sum up all satisfied credits
+		for (Course course : satisfiedCourses) {
+			cumCredits += course.getCredits();
+		}
+		
+		for (Semester semester : semesters) {
+			semester.setPriorCumulativeCredits(cumCredits);
+			for (Course course : semester.getCourses()) {
+				cumCredits += course.getCredits();
+			}
+		}
 	}
 	
-	// must be called before updating semesters, so old semester object references still hold up
 	private void updateDegrees() {
 		Set<Course> courses = new TreeSet<Course>();
 		Set<Course> unassignedCourses = new HashSet<Course>();
 		Set<Course> satisfiedCourses = new HashSet<Course>();
 		Map<Course, Semester> coursesInSemesters = new HashMap<Course, Semester>();
 		
-		Iterator<Degree> degreesIter = settings.getDegrees();
-		while (degreesIter.hasNext()) {
-			Degree degree = degreesIter.next();
+		for (Degree degree : settings.getDegrees()) {
 			for (Course course : degree.getAllCourses()) {
 				courses.add(course);
 				if (this.coursesInSemesters.containsKey(course)) {
@@ -280,32 +428,47 @@ public class Plan {
 		this.coursesInSemesters = coursesInSemesters;
 	}
 	
+	private Semester getSemesterBefore(Semester semester) {
+		Season season = settings.getNearestEnabledBefore(semester.getSeason());
+		int year = semester.getYear()
+				- (semester.getSeason().ordinal() - season.ordinal() > 0 ? 0 : 1);
+		int cumCredits = settings.getStartingCredits();
+		return new Semester(year, season, cumCredits);
+	}
+	
+	private Semester getSemesterAfter(Semester semester) {
+		Season season = settings.getNearestEnabledAfter(semester.getSeason());
+		int year = semester.getYear();
+		if (season.ordinal() <= semester.getSeason().ordinal()) {
+			year++;
+		}
+		int cumCredits = semester.getTotalCumulativeCredits();
+		return new Semester(year, season, cumCredits);
+	}
+	
+	
+	// ----------
+	
 	public String toPrint() {
 		StringBuilder s = new StringBuilder();
 		
 		s.append("Degrees:\n");
-		Iterator<Degree> iter = settings.getDegrees();
-		while (iter.hasNext()) {
-			Degree degree = iter.next();
+		for (Degree degree : settings.getDegrees()) {
 			s.append("  ");
 			s.append(degree.getReqirements().isSatisfied(this) ? "✓ - " : "X - ");
 			s.append(degree).append('\n');
 		}
-		s.append("\nUnassigned:\n");
-		s.append(toPrintIndented(unassignedCourses));
-		s.append("Satisfied:\n");
-		s.append(toPrintIndented(satisfiedCourses));
+		s.append('\n').append(UNASSIGNED_NAME).append(":\n");
+		s.append(toStringIndented(unassignedCourses)).append('\n');
+		s.append(SATISFIED_NAME).append(":\n");
+		s.append(toStringIndented(satisfiedCourses)).append('\n');
 		for (Semester semester : semesters) {
-			s.append(semester.toString()).append('\n');
-			s.append("Cumulative Credits: ").append(semester.getPriorCumulativeCredits()).append(", ");
-			s.append(semester.getStudentYear()).append('\n');
-			s.append("Credits: ").append(semester.getTotalCredits());
-			s.append(toPrintIndented(semester));
+			s.append(semester.toPrint()).append('\n');
 		}
 		return s.toString();
 	}
 	
-	private String toPrintIndented(Iterable<?> objects) {
+	private String toStringIndented(Iterable<?> objects) {
 		StringBuilder s = new StringBuilder();
 		for (Object o : objects) {
 			s.append("  ").append(o).append('\n');
