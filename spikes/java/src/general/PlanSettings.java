@@ -8,6 +8,8 @@ import java.util.LinkedList;
 
 import semesters.Season;
 import degree.Degree;
+import exceptions.LastEnabledSeasonException;
+import utils.Args;
 
 /**
  * 
@@ -28,7 +30,7 @@ public class PlanSettings extends ChangeFlaggable implements Cloneable {
 	private Season startingSeason;
     private int startingCredits;
     private boolean[] enabledSeasons;
-    private List<Degree> degrees;
+    private List<Degree> degrees; // TODO consider changing to Set?
     
     public PlanSettings() {
         this.startingYear = DEFAULT_STARTING_YEAR;
@@ -54,15 +56,18 @@ public class PlanSettings extends ChangeFlaggable implements Cloneable {
         }
     }
 
+	
+	// --------------------------------
+	//  Starting Conditions
+	// --------------------------------
+    
 	public int getStartingYear() {
 		return startingYear;
 	}
 
 	public void setStartingYear(int startingYear) {
-		if (startingYear < 0) {
-			throw new IllegalArgumentException(
-					"Invalid staring year: " + String.valueOf(startingYear));
-		}
+		Args.checkNonNegative(startingYear, "startingYear");
+		
 		if (this.startingYear != startingYear) {
 			this.startingYear = startingYear;
 			flagChange();
@@ -74,10 +79,12 @@ public class PlanSettings extends ChangeFlaggable implements Cloneable {
 	}
 
 	public void setStartingSeason(Season startingSeason) {
-		if (startingSeason == null) {
+		Args.checkNull(startingSeason, "starting season");
+		if (!isEnabled(startingSeason)) {
 			throw new IllegalArgumentException(
-					"Cannot set starting season to null");
+					"Cannot set starting season to a disabled season (" + startingSeason.toString() + ")");
 		}
+		
 		if (this.startingSeason != startingSeason) {
 			this.startingSeason = startingSeason;
 			flagChange();
@@ -88,22 +95,24 @@ public class PlanSettings extends ChangeFlaggable implements Cloneable {
 		return startingCredits;
 	}
 	
+	// credits earned prior to the plan not including the credits
+	//     of already-satisfied courses 
 	public void setStartingCredits(int startingCredits) {
-		if (startingCredits < 0) {
-			throw new IllegalArgumentException(
-					"Credits must be >= 0, was passed " + String.valueOf(startingCredits));
-		}
+		// negative ok
 		if (this.startingCredits != startingCredits) {
 			this.startingCredits = startingCredits;
 			flagChange();
 		}
 	}
 
+
+	// --------------------------------
+	//  Enabling Seasons
+	// --------------------------------
+    
 	public void enable(Season season) {
-		if (season == null) {
-			throw new IllegalArgumentException(
-					"Cannot enable a null season");
-		}
+		Args.checkNull(season, "season");
+		
 		if (enabledSeasons[season.ordinal()] == false) {
 			enabledSeasons[season.ordinal()] = true;
 			flagChange();
@@ -111,27 +120,31 @@ public class PlanSettings extends ChangeFlaggable implements Cloneable {
 	}
 	
 	public void disable(Season season) {
-		if (season == null) {
-			throw new IllegalArgumentException(
-					"Cannot disable a null season");
+		Args.checkNull(season, "season");
+		
+		if (this.getNearestEnabledAfter(season) == season) {
+			throw new LastEnabledSeasonException(season);
 		}
+		
 		if (enabledSeasons[season.ordinal()] == true) {
 			enabledSeasons[season.ordinal()] = false;
 			flagChange();
+			
+			if (startingSeason.equals(season)) {
+				startingSeason = this.getNearestEnabledAfter(startingSeason);
+			}
 		}
 	}
 	
 	public boolean isEnabled(Season season) {
-		if (season == null) {
-			throw new IllegalArgumentException("Season was null");
-		}
+		Args.checkNull(season, "season");
+		
 		return enabledSeasons[season.ordinal()];
 	}
 	
 	public Season getNearestEnabledAfter(Season season) {
-		if (season == null) {
-			throw new IllegalArgumentException("Season was null");
-		}
+		Args.checkNull(season, "season");
+		
 		Season toReturn = season.getNext();
 		while (!enabledSeasons[toReturn.ordinal()] ) {
 			toReturn = toReturn.getNext();
@@ -140,20 +153,23 @@ public class PlanSettings extends ChangeFlaggable implements Cloneable {
 	}
 	
 	public Season getNearestEnabledBefore(Season season) {
-		if (season == null) {
-			throw new IllegalArgumentException("Season was null");
-		}
+		Args.checkNull(season, "season");
+		
 		Season toReturn = season.getPrev();
 		while (!enabledSeasons[toReturn.ordinal()] ) {
 			toReturn = toReturn.getPrev();
 		}
 		return toReturn;
 	}
-
+	
+	
+	// --------------------------------
+	//  Enabled Seasons
+	// --------------------------------
+	
 	public void addDegree(Degree degree) {
-		if (degree == null) {
-			throw new IllegalArgumentException("Cannot add a null degree");
-		}
+		Args.checkNull(degree, "degree");
+		
 		if (!degrees.contains(degree)) {
 			degrees.add(degree);
 			flagChange();
@@ -161,9 +177,8 @@ public class PlanSettings extends ChangeFlaggable implements Cloneable {
 	}
 	
 	public void removeDegree(Degree degree) {
-		if (degree == null) {
-			throw new IllegalArgumentException("Cannot remove a null degree");
-		}
+		Args.checkNull(degree, "degree");
+		
 		if (degrees.contains(degree)) {
 			degrees.remove(degree);
 			flagChange();
@@ -174,6 +189,14 @@ public class PlanSettings extends ChangeFlaggable implements Cloneable {
 		return degrees.iterator();
 	}
 	
+	public boolean containsDegree(Degree degree) {
+		return degrees.contains(degree);
+	}
+	
+	// --------------------------------
+	//  Generic Overrides
+	// --------------------------------
+	
 	@Override
 	public PlanSettings clone() {
 		return new PlanSettings(this);
@@ -181,13 +204,13 @@ public class PlanSettings extends ChangeFlaggable implements Cloneable {
 	
 	@Override
 	public boolean equals(Object o) {
-		// TODO
+		// TODO kind of important
 		return false;
 	}
 	
 	@Override
 	public String toString() {
-		// TODO
+		// TODO not very important
 		return null;
 	}
 	
