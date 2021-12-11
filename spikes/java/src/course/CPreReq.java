@@ -23,8 +23,9 @@ public class CPreReq extends CourseReq {
 	
 	@Override
 	public boolean isSatisfied(Plan plan, Semester semesterOfReqFor) {
-		Semester coReqSemester = plan.getSemesterOf(this.preReqCourse);
-		return coReqSemester.compareTo(semesterOfReqFor) < 0;
+		return plan.isSatisfied(preReqCourse) || (
+			!plan.isUnassigned(preReqCourse) &&  
+			semesterOfReqFor.compareTo(plan.getSemesterOf(preReqCourse)) > 0 );
 	}
 
 	@Override
