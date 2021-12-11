@@ -6,6 +6,7 @@ package degree;
 
 import course.Course;
 import general.Plan;
+import utils.Args;
 
 /**
  * Complete 31 Oct
@@ -18,19 +19,26 @@ public class DReqAnd implements DegreeReq {
 	private String comment;
 	
 	public DReqAnd(DegreeReq req1, DegreeReq req2) {
+		Args.checkNull(req1, "req1");
+		Args.checkNull(req2, "req2");
 		this.reqs = new DegreeReq[] { req1, req2 };
 	}
 	
 	public DReqAnd(DegreeReq req1, DegreeReq req2, DegreeReq req3) {
+		Args.checkNull(req1, "req1");
+		Args.checkNull(req2, "req2");
+		Args.checkNull(req3, "req3");
 		this.reqs = new DegreeReq[] { req1, req2, req3 };
 	}
 	
 	public DReqAnd(DegreeReq[] reqs) {
+		Args.checkNullArr(reqs, "reqs");
 		this.reqs = reqs;
 	}
 	
 	@Override
 	public boolean isSatisfied(Plan plan) {
+		Args.checkNull(plan, "plan");
 		for (DegreeReq req : reqs) {
 			if (!req.isSatisfied(plan)) {
 				return false;

@@ -5,6 +5,7 @@ package degree;
 
 import course.Course;
 import general.Plan;
+import utils.Args;
 
 /**
  * Complete 31 Oct
@@ -18,16 +19,22 @@ public class DReqOr implements DegreeReq {
 	private String comment;
 	
 	public DReqOr(DegreeReq req1, DegreeReq req2) {
+		Args.checkNull(req1, "req1");
+		Args.checkNull(req2, "req2");
 		this.reqs = new DegreeReq[] { req1, req2 };
 		selectionIndex = -1;
 	}
 	
 	public DReqOr(DegreeReq req1, DegreeReq req2, DegreeReq req3) {
+		Args.checkNull(req1, "req1");
+		Args.checkNull(req2, "req2");
+		Args.checkNull(req3, "req3");
 		this.reqs = new DegreeReq[] { req1, req2, req3 };
 		selectionIndex = -1;
 	}
 	
 	public DReqOr(DegreeReq[] reqs) {
+		Args.checkNullArr(reqs, "reqs");
 		this.reqs = reqs;
 		selectionIndex = -1;
 	}
@@ -37,6 +44,7 @@ public class DReqOr implements DegreeReq {
 	}
 	
 	public void setSelection(DegreeReq choice) {
+		Args.checkNull(choice, "choice");
 		for (int i = 0; i < reqs.length; i++) {
 			if (reqs[i] == choice) {
 				selectionIndex = i;
@@ -51,6 +59,7 @@ public class DReqOr implements DegreeReq {
 	
 	@Override
 	public boolean isSatisfied(Plan plan) {
+		Args.checkNull(plan, "plan");
 		for (DegreeReq req : reqs) {
 			if (req.isSatisfied(plan)) {
 				return true;

@@ -4,6 +4,7 @@
 package degree;
 
 import course.Course;
+import utils.Args;
 
 /**
  * @author Quaris
@@ -14,6 +15,8 @@ public class Degree {
 	private String name;
 	
 	public Degree(String name, DegreeReq reqs) {
+		Args.checkNull(name, "name");
+		Args.checkNull(reqs, "reqs");
 		this.name = name;
 		this.reqs = reqs;
 	}

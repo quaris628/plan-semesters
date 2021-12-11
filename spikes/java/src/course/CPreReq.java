@@ -5,6 +5,7 @@ package course;
 
 import general.Plan;
 import semesters.Semester;
+import utils.Args;
 
 /**
  * Complete 7 Nov
@@ -16,6 +17,7 @@ public class CPreReq extends CourseReq {
 	private Course preReqCourse;
 	
 	public CPreReq(Course preReqCourse) {
+		Args.checkNull(preReqCourse, "preReqCourse");
 		this.preReqCourse = preReqCourse;
 	}
 	

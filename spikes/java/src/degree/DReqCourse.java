@@ -5,6 +5,7 @@ package degree;
 
 import course.Course;
 import general.Plan;
+import utils.Args;
 
 /**
  * Complete 31 Oct
@@ -17,6 +18,7 @@ public class DReqCourse implements DegreeReq {
 	private String comment;
 	
 	public DReqCourse(Course course) {
+		Args.checkNull(course, "course");
 		this.course = course;
 	}
 	
@@ -26,6 +28,7 @@ public class DReqCourse implements DegreeReq {
 	
 	@Override
 	public boolean isSatisfied(Plan plan) {
+		Args.checkNull(plan, "plan");
 		return !plan.isUnassigned(course);
 	}
 

@@ -3,6 +3,8 @@
  */
 package semesters;
 
+import utils.Args;
+
 /**
  * Complete
  * @author Quaris
@@ -27,7 +29,9 @@ public enum StudentYear {
 	}
 	
 	public static StudentYear getStudentYear(int credits) {
-		return StudentYear.values()[credits / CREDITS_PER_YEAR_STATUS];
+		Args.checkNonNegative(credits, "credits");
+		return StudentYear.values()[Math.min(StudentYear.values().length,
+				credits / CREDITS_PER_YEAR_STATUS)];
 	}
 	
 	@Override

@@ -6,6 +6,7 @@ package degree;
 import course.Course;
 import exceptions.ItemNotFoundException;
 import general.Plan;
+import utils.Args;
 
 /**
  * Complete 31 Oct
@@ -20,8 +21,10 @@ public class DReqQuota implements DegreeReq {
 	private String comment;
 	
 	public DReqQuota(DegreeReq[] reqs, int quota) {
+		Args.checkNullArr(reqs, "reqs");
+		Args.checkNonNegative(quota, "quota");
 		if (quota >= reqs.length) {
-			throw new IllegalArgumentException("quota is too large");
+			throw new IllegalArgumentException("quota is unattainably large");
 		}
 		this.reqs = reqs;
 		this.quota = quota; 
@@ -50,6 +53,7 @@ public class DReqQuota implements DegreeReq {
 	}
 	
 	public void select(DegreeReq selection) {
+		Args.checkNull(selection, "selection");
 		for (int i = 0; i < reqs.length; i++) {
 			if (reqs[i] == selection) {
 				selected[i] = true;
@@ -59,6 +63,7 @@ public class DReqQuota implements DegreeReq {
 	}
 	
 	public void deselect(DegreeReq deselection) {
+		Args.checkNull(deselection, "deselection");
 		for (int i = 0; i < reqs.length; i++) {
 			if (reqs[i] == deselection) {
 				selected[i] = false;
@@ -69,6 +74,7 @@ public class DReqQuota implements DegreeReq {
 	
 	@Override
 	public boolean isSatisfied(Plan plan) {
+		Args.checkNull(plan, "plan");
 		int totalSubReqsSatisfied = 0;
 		for (DegreeReq req : reqs) {
 			if (req.isSatisfied(plan)) {

@@ -6,6 +6,7 @@ package degree;
 import course.Course;
 import exceptions.ItemNotFoundException;
 import general.Plan;
+import utils.Args;
 
 /**
  * Complete 31 Oct
@@ -20,6 +21,8 @@ public class DReqCreditsQuota implements DegreeReq {
 	private String comment;
 	
 	public DReqCreditsQuota(DReqCourse[] reqs, int creditsQuota) {
+		Args.checkNullArr(reqs, "reqs");
+		Args.checkNonNegative(creditsQuota, "creditsQuota");
 		this.reqs = reqs;
 		this.creditsQuota = creditsQuota;
 		selected = new boolean[reqs.length];
@@ -59,6 +62,7 @@ public class DReqCreditsQuota implements DegreeReq {
 	 * Throws exception if selection not found
 	 */
 	public void select(DegreeReq selection) {
+		Args.checkNull(selection, "selection");
 		for (int i = 0; i < reqs.length; i++) {
 			if (reqs[i] == selection) {
 				selected[i] = true;
@@ -72,6 +76,7 @@ public class DReqCreditsQuota implements DegreeReq {
 	 * Throws exception if deselection not found
 	 */
 	public void deselect(DegreeReq deselection) {
+		Args.checkNull(deselection, "deselection");
 		for (int i = 0; i < reqs.length; i++) {
 			if (reqs[i] == deselection) {
 				selected[i] = false;
@@ -82,6 +87,7 @@ public class DReqCreditsQuota implements DegreeReq {
 	
 	@Override
 	public boolean isSatisfied(Plan plan) {
+		Args.checkNull(plan, "plan");
 		int totalCredits = 0;
 		for (DReqCourse reqCourse : reqs) {
 			if (reqCourse.isSatisfied(plan)) {

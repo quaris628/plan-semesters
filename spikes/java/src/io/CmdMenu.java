@@ -9,6 +9,8 @@ import java.util.InputMismatchException;
 import java.util.LinkedList;
 import java.util.Scanner;
 
+import utils.Args;
+
 /**
  * A Menu for programs with Command Prompt i/o
  * Displays options to the user, then lets the user choose an option by typing its number
@@ -156,7 +158,8 @@ public class CmdMenu implements Runnable {
 	     * @return this
 	     */
 	    public CmdMenuBuilder withOption(String title, Runnable action) {
-	        menuOptions.addLast(new CmdMenuOption(title, action));
+	        Args.checkNull(action, "action");
+	    	menuOptions.addLast(new CmdMenuOption(title, action));
 	        return this;
 	    }
 	    
@@ -168,6 +171,7 @@ public class CmdMenu implements Runnable {
 	     * @return this
 	     */
 	    public CmdMenuBuilder withOption(CmdMenuOption option) {
+	    	Args.checkNull(option, "option");
 	    	menuOptions.addLast(option);
 	    	return this;
 	    }
@@ -179,6 +183,7 @@ public class CmdMenu implements Runnable {
 	     * @return this
 	     */
 	    public CmdMenuBuilder withOnEnter(Runnable onStart) {
+	    	Args.checkNull(onStart, "onStart");
 	    	this.onStart = onStart;
 	    	return this;
 	    }
@@ -234,6 +239,7 @@ public class CmdMenu implements Runnable {
 	     * @return this
 	     */
 	    public CmdMenuBuilder withInput(InputStream input) {
+	    	Args.checkNull(input, "input");
 	    	this.in = input;
 	    	return this;
 	    }
@@ -245,6 +251,7 @@ public class CmdMenu implements Runnable {
 	     * @return this
 	     */
 	    public CmdMenuBuilder withOutput(PrintStream output) {
+	    	Args.checkNull(output, "output");
 	    	this.out = output;
 	    	return this;
 	    }

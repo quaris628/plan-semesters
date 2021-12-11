@@ -5,6 +5,7 @@ package course;
 
 import general.Plan;
 import semesters.Semester;
+import utils.Args;
 
 /**
  * Complete 7 Nov
@@ -27,6 +28,7 @@ public abstract class CourseReq {
 	 * @param reqFor
 	 */
 	public void _setRequiredForCourse(Course reqFor) {
+		Args.checkNull(reqFor, "reqFor");
 		this.reqFor = reqFor;
 	}
 	

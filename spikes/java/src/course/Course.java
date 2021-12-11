@@ -3,6 +3,8 @@
  */
 package course;
 
+import utils.Args;
+
 /**
  * Complete, 26 Oct
  * @author Quaris
@@ -19,6 +21,7 @@ public class Course implements Comparable<Course> {
 	private String comment;
 	
 	public Course(String id, String dept, String fullName, int credits) {
+		Args.checkNull(id, "id");
 		this.id = id;
 		this.dept = dept;
 		this.fullName = fullName;
@@ -30,6 +33,7 @@ public class Course implements Comparable<Course> {
 	
 	public Course(String id, String dept, String fullName, int credits,
 			String description) {
+		Args.checkNull(id, "id");
 		this.id = id;
 		this.dept = dept;
 		this.fullName = fullName;
@@ -41,6 +45,8 @@ public class Course implements Comparable<Course> {
 	
 	public Course(String id, String dept, String fullName, int credits,
 			CourseReq reqs) {
+		Args.checkNull(id, "id");
+		Args.checkNull(reqs, "reqs");
 		this.id = id;
 		this.dept = dept;
 		this.fullName = fullName;
@@ -53,6 +59,8 @@ public class Course implements Comparable<Course> {
 	
 	public Course(String id, String dept, String fullName, int credits,
 			String description, CourseReq reqs) {
+		Args.checkNull(id, "id");
+		Args.checkNull(reqs, "reqs");
 		this.id = id;
 		this.dept = dept;
 		this.fullName = fullName;
@@ -97,10 +105,7 @@ public class Course implements Comparable<Course> {
 
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
-		return result;
+		return (id == null) ? 0 : id.hashCode();
 	}
 	
 	@Override
