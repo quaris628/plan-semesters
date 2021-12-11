@@ -43,7 +43,7 @@ public class PlanMgr {
 			.withOption("Auto-Assign Unplanned Courses", () -> {
 					Main.PLAN.autoAssign(Main.PLAN.getUnassigned()); })
 			.withOption("Auto-Assign All Courses", () -> {
-					Main.PLAN.autoAssign(Main.PLAN.getAllUniqueCourses()); })
+					Main.PLAN.autoAssign(Main.PLAN.getCourses()); })
 			.withOption("Edit Semester Settings", () -> {})
 			.build();
 
@@ -81,7 +81,7 @@ public class PlanMgr {
 				"Select a Course to assign to a different Semester:")
 				.withOnEnter(PlanMgr::printPlan);
 		
-		for (Course course : Main.PLAN.getAllUniqueCourses()) {
+		for (Course course : Main.PLAN.getCourses()) {
 			menuBuilder.withOption(course.toString() + " ("
 					+ Main.PLAN.getAssignmentNameOf(course) + ")",
 					() -> { askSemesterOfCourse(course); });

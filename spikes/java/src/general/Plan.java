@@ -66,8 +66,8 @@ public class Plan {
 	 * @return true if course can be assigned to the semester, otherwise false
 	 */
 	public boolean canAssign(Course course, Semester semester) {
-		checkArgument(course);
-		checkArgument(semester);
+		checkArg(course);
+		checkArg(semester);
 		
 		if (course.getReqs() == null) {
 			return true;
@@ -81,8 +81,8 @@ public class Plan {
 	 * @param semester to assign the course to
 	 */
 	public void assign(Course course, Semester semester) {
-		checkArgument(course);
-		checkArgument(semester);
+		checkArg(course);
+		checkArg(semester);
 		
 		// TODO this has some problem unassigning a course from another semester
 		// it is already in. Came up when assigning to a semester later than
@@ -113,7 +113,7 @@ public class Plan {
 	 * @param course to unassign
 	 */
 	public void unassign(Course course) {
-		checkArgument(course);
+		checkArg(course);
 		
 		if (coursesInSemesters.containsKey(course)) {
 			coursesInSemesters.get(course).remove(course);
@@ -128,7 +128,7 @@ public class Plan {
 	 * @param course
 	 */
 	public void assignSatisfied(Course course) {
-		checkArgument(course);
+		checkArg(course);
 		
 		if (coursesInSemesters.containsKey(course)) {
 			coursesInSemesters.get(course).remove(course);
@@ -142,7 +142,7 @@ public class Plan {
 	 * Unassigns all courses from all semesters
 	 * Does not move courses marked as satisfied
 	 */
-	public void clearAssigned() {
+	public void unassignAllNotSatisfied() {
 		for (Semester s : semesters) {
 			s.clearCourses();
 		}
@@ -207,7 +207,7 @@ public class Plan {
 	 * @return true if course is unassigned, otherwise false
 	 */
 	public boolean isUnassigned(Course course) {
-		checkArgument(course);
+		checkArg(course);
 		return unassignedCourses.contains(course);
 	}
 	
@@ -217,7 +217,7 @@ public class Plan {
 	 * @return true if course is satisfied, otherwise false
 	 */
 	public boolean isSatisfied(Course course) {
-		checkArgument(course);
+		checkArg(course);
 		return satisfiedCourses.contains(course);
 	}
 	
@@ -266,7 +266,7 @@ public class Plan {
 	}
 	
 	public Semester getSemesterOf(Course course) {
-		checkArgument(course);
+		checkArg(course);
 		return coursesInSemesters.get(course);
 	}
 	
@@ -281,24 +281,8 @@ public class Plan {
 		
 	}
 	
-	private void checkArgument(Course course) {
-		Args.checkNull(course, "course");
-		if (!(unassignedCourses.contains(course)
-				|| satisfiedCourses.contains(course)
-				|| coursesInSemesters.containsKey(course))) {
-			throw new IllegalArgumentException("plan does not contain " + course.toString());
-		}
-	}
-	
-	private void checkArgument(Semester semester) {
-		Args.checkNull(semester, "semester");
-		if (!semesters.contains(semester)) {
-			throw new IllegalArgumentException("plan does not contain " + semester.toString());
-		}
-	}
-	
 	/**
-	 * Gets iterator over all semesters contained in this plan
+	 * Gets iterable over all semesters contained in this plan
 	 * @return iterator over semesters
 	 */
 	public Iterable<Semester> getSemesters() {
@@ -309,10 +293,25 @@ public class Plan {
 	 * Gets iterable over all courses (including unassigned and satisfied) contained in this plan
 	 * @return Iterable<Course> over all courses
 	 */
-	public Iterable<Course> getAllUniqueCourses() {
+	public Iterable<Course> getCourses() {
 		return courses;
 	}
+
+	private void checkArg(Course course) {
+		Args.checkNull(course, "course");
+		if (!(unassignedCourses.contains(course)
+				|| satisfiedCourses.contains(course)
+				|| coursesInSemesters.containsKey(course))) {
+			throw new IllegalArgumentException("plan does not contain " + course.toString());
+		}
+	}
 	
+	private void checkArg(Semester semester) {
+		Args.checkNull(semester, "semester");
+		if (!semesters.contains(semester)) {
+			throw new IllegalArgumentException("plan does not contain " + semester.toString());
+		}
+	}
 	
 	// --------------------------------
 	//  Plan Settings
