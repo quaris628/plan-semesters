@@ -13,10 +13,9 @@ import utils.Args;
  * @author Quaris
  *
  */
-public class DReqAnd implements DegreeReq {
+public class DReqAnd extends DegreeReq {
 
 	private DegreeReq[] reqs;
-	private String comment;
 	
 	public DReqAnd(DegreeReq req1, DegreeReq req2) {
 		Args.checkNull(req1, "req1");
@@ -63,16 +62,6 @@ public class DReqAnd implements DegreeReq {
 			}
 		}
 		return allCourses;
-	}
-
-	@Override
-	public void addComment(String comment) {
-		this.comment = comment;
-	}
-
-	@Override
-	public String getComment() {
-		return comment;
 	}
 	
 	@Override

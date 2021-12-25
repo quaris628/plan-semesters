@@ -12,11 +12,10 @@ import utils.Args;
  * @author Quaris
  *
  */
-public class DReqOr implements DegreeReq {
+public class DReqOr extends DegreeReq {
 
 	private DegreeReq[] reqs;
 	private int selectionIndex;
-	private String comment;
 	
 	public DReqOr(DegreeReq req1, DegreeReq req2) {
 		Args.checkNull(req1, "req1");
@@ -74,16 +73,6 @@ public class DReqOr implements DegreeReq {
 			return null;
 		}
 		return reqs[selectionIndex].getAllCourses();
-	}
-	
-	@Override
-	public void addComment(String comment) {
-		this.comment = comment;
-	}
-
-	@Override
-	public String getComment() {
-		return comment;
 	}
 	
 	@Override

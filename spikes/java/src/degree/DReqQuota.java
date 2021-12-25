@@ -13,12 +13,11 @@ import utils.Args;
  * @author Quaris
  *
  */
-public class DReqQuota implements DegreeReq {
+public class DReqQuota extends DegreeReq {
 
 	private DegreeReq[] reqs;
 	private int quota;
 	private boolean[] selected;
-	private String comment;
 	
 	public DReqQuota(DegreeReq[] reqs, int quota) {
 		Args.checkNullArr(reqs, "reqs");
@@ -100,16 +99,6 @@ public class DReqQuota implements DegreeReq {
 			}
 		}
 		return allCourses;
-	}
-	
-	@Override
-	public void addComment(String comment) {
-		this.comment = comment;
-	}
-
-	@Override
-	public String getComment() {
-		return comment;
 	}
 	
 	@Override

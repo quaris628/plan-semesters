@@ -83,9 +83,10 @@ public class Plan {
 		checkArg(course);
 		checkArg(semester);
 		
-		// TODO this has some problem unassigning a course from another semester
+		// TODO This has some problem unassigning a course from another semester
 		// it is already in. Came up when assigning to a semester later than
 		// the current semester.
+		// Edit: unable to duplicate.
 		
 		if (coursesInSemesters.containsKey(course)) {
 			Semester oldSemester = coursesInSemesters.get(course);

@@ -10,13 +10,21 @@ import general.Plan;
  * @author Quaris
  *
  */
-public interface DegreeReq {
+public abstract class DegreeReq {
 
-	boolean isSatisfied(Plan plan);
+	private String comment;
+	
+	public abstract boolean isSatisfied(Plan plan);
 	// TODO getAllCourses, addComment, and getComment are
 	//      often duplicated in other DegreeReqs.
 	//      Move these to a superclass?
-	Course[] getAllCourses();
-	void addComment(String comment);
-	String getComment();
+	public abstract Course[] getAllCourses();
+	
+	public void addComment(String comment) {
+		this.comment = comment;
+	}
+	
+	public String getComment() {
+		return comment;
+	}
 }

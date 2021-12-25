@@ -12,7 +12,7 @@ import utils.Args;
  * @author Quaris
  *
  */
-public class DReqCourse implements DegreeReq {
+public class DReqCourse extends DegreeReq {
 
 	private Course course;
 	private String comment;
@@ -35,16 +35,6 @@ public class DReqCourse implements DegreeReq {
 	@Override
 	public Course[] getAllCourses() {
 		return new Course[] { course };
-	}
-
-	@Override
-	public void addComment(String comment) {
-		this.comment = comment;
-	}
-
-	@Override
-	public String getComment() {
-		return comment;
 	}
 	
 	@Override

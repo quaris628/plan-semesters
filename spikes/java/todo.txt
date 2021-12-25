@@ -1,0 +1,5 @@
+BUG - removing a degree does not remove its associated courses from the plan
+
+- Auto-prompt for degree selection upon entering course planner
+  ^- add "open an existing plan" to auto-prompt?
+- Replace ph Catalog with actual catalog, w/ degree mgt
