@@ -29,7 +29,7 @@ public class PlanSettings extends ChangeFlaggable implements Cloneable {
 	private Season startingSeason;
     private int startingCredits;
     private boolean[] enabledSeasons;
-    private Set<Degree> degrees; // TODO consider changing to Set?
+    private Set<Degree> degrees;
     
     public PlanSettings() {
         this.startingYear = DEFAULT_STARTING_YEAR;
@@ -202,9 +202,38 @@ public class PlanSettings extends ChangeFlaggable implements Cloneable {
 	}
 	
 	@Override
-	public boolean equals(Object o) {
-		// TODO kind of important
-		return false;
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((degrees == null) ? 0 : degrees.hashCode());
+		result = prime * result + Arrays.hashCode(enabledSeasons);
+		result = prime * result + startingCredits;
+		result = prime * result + ((startingSeason == null) ? 0 : startingSeason.hashCode());
+		result = prime * result + startingYear;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!(obj instanceof PlanSettings))
+			return false;
+		PlanSettings other = (PlanSettings) obj;
+		if (degrees == null) {
+			if (other.degrees != null)
+				return false;
+		} else if (!degrees.equals(other.degrees))
+			return false;
+		if (!Arrays.equals(enabledSeasons, other.enabledSeasons))
+			return false;
+		if (startingCredits != other.startingCredits)
+			return false;
+		if (startingSeason != other.startingSeason)
+			return false;
+		if (startingYear != other.startingYear)
+			return false;
+		return true;
 	}
 	
 	@Override
