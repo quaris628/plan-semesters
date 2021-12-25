@@ -1,9 +1,9 @@
 package general;
 
 import java.time.Year;
-import java.util.List;
+import java.util.Set;
 import java.util.Arrays;
-import java.util.LinkedList;
+import java.util.HashSet;
 
 import semesters.Season;
 import degree.Degree;
@@ -29,7 +29,7 @@ public class PlanSettings extends ChangeFlaggable implements Cloneable {
 	private Season startingSeason;
     private int startingCredits;
     private boolean[] enabledSeasons;
-    private List<Degree> degrees; // TODO consider changing to Set?
+    private Set<Degree> degrees; // TODO consider changing to Set?
     
     public PlanSettings() {
         this.startingYear = DEFAULT_STARTING_YEAR;
@@ -40,7 +40,7 @@ public class PlanSettings extends ChangeFlaggable implements Cloneable {
         		DEFAULT_ENABLED_SPRING,
 				DEFAULT_ENABLED_SUMMER,
 				DEFAULT_ENABLED_FALL };
-        this.degrees = new LinkedList<Degree>();
+        this.degrees = new HashSet<Degree>();
     }
     
     // Copy Constructor
@@ -49,7 +49,7 @@ public class PlanSettings extends ChangeFlaggable implements Cloneable {
         this.startingSeason = p.startingSeason;
         this.startingCredits = p.startingCredits;
         this.enabledSeasons = Arrays.copyOf(p.enabledSeasons, p.enabledSeasons.length);        
-        this.degrees = new LinkedList<Degree>();
+        this.degrees = new HashSet<Degree>();
         for (Degree degree : p.degrees) {
         	this.degrees.add(degree);
         }
