@@ -1,13 +1,12 @@
 /**
  * 
  */
-package io;
-
-import java.util.Iterator;
+package control;
 
 import catalog.Catalog;
 import course.Course;
 import degree.Degree;
+import io.CmdMenu;
 import semesters.Semester;
 import utils.Args;
 

@@ -1,7 +1,9 @@
 /**
  * 
  */
-package io;
+package control;
+
+import io.CmdMenu;
 
 /**
  * I/O related to user's managing the library of degrees and their requirements

@@ -1,6 +1,7 @@
-package io;
+package control;
 
 import general.Plan;
+import io.CmdMenu;
 
 /**
  * Command Line stuff that lets me use the system
