@@ -406,6 +406,10 @@ public class Plan {
 		Set<Course> unassignedCourses = new HashSet<Course>();
 		Set<Course> satisfiedCourses = new HashSet<Course>();
 		Map<Course, Semester> coursesInSemesters = new HashMap<Course, Semester>();
+
+		for (Semester semester : semesters) {
+			semester.clearCourses();
+		}
 		
 		for (Degree degree : settings.getDegrees()) {
 			for (Course course : degree.getAllCourses()) {
@@ -421,9 +425,10 @@ public class Plan {
 				}
 			}
 		}
-		
+
 		this.courses = courses;
 		this.unassignedCourses = unassignedCourses;
+		this.satisfiedCourses = satisfiedCourses;
 		this.coursesInSemesters = coursesInSemesters;
 	}
 	

@@ -96,20 +96,23 @@ public class Semester implements Comparable<Semester> {
 		}
 	}
 	
-	public void remove(Object course) {
+	public void remove(Course course) {
 		Args.checkNull(course, "course");
-		if (!(course instanceof Course)) {
-			throw new IllegalArgumentException("Cannot remove non-courses");
+		
+		if (courses.contains(course)) {
+			courses.remove(course);
+			numCredits -= course.getCredits();
 		}
-		Course courseToRemove = (Course)course;
-		if (courses.contains(courseToRemove)) {
-			courses.remove(courseToRemove);
-			numCredits -= courseToRemove.getCredits();
-		}
+	}
+	
+	public boolean contains(Course course) {
+		Args.checkNull(course, "course");
+		return courses.contains(course);
 	}
 	
 	public void clearCourses() {
 		courses.clear();
+		numCredits = 0;
 	}
 	
 	public Iterable<Course> getCourses() {
