@@ -134,11 +134,12 @@ public class Semester implements Comparable<Semester> {
 	
 	public String toPrint() {
 		StringBuilder s = new StringBuilder();
-		s.append(getName()).append(", ").append(getStudentYear()).append('\n');
+		s.append(getName()).append("\t");
+		s.append(numCredits).append(" credits\t");
+		s.append(getStudentYear()).append('\n');
 		for (Course course : courses) {
 			s.append("  ").append(course.toString()).append('\n');
 		}
-		s.append("  Credits: ").append(numCredits).append('\n');
 		return s.toString();
 	}
 	
